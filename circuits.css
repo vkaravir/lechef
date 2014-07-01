@@ -1,0 +1,112 @@
+.jsav-circuit {
+  width: 100%;
+  height: 100%;
+}
+.jsav-circuit-component {
+  min-width: 150px;
+  min-height: 100px;
+  position: absolute;
+  cursor: move;
+}
+.jsav-circuit-component .jsavlabel {
+  position: absolute;
+  top: 40%;
+  left: 25%;
+  margin: 0;
+}
+.jsav-circuit-output-component .jsavlabel,
+.jsav-circuit-input-component .jsavlabel {
+  font-size: 200%;
+  top: 28%;
+}
+.jsav-circuit-output-component .jsavlabel {
+  left: 48%;
+}
+.jsav-circuit-input-component .jsavlabel {
+  left: 18%;
+}
+
+.jsav-circuit-component path,
+.jsav-circuit-component rect,
+.jsav-circuit-component circle {
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.jsav-circuit-input-component,
+.jsav-circuit-output-component {
+  min-width: 80px;
+  min-height: 80px;
+}
+
+.jsav-circuit-input.jsav-circuit-value-false:before,
+.jsav-circuit-input.jsav-circuit-value-true:before,
+.jsav-circuit-output.jsav-circuit-value-false:before,
+.jsav-circuit-output.jsav-circuit-value-true:before {
+  display: block;
+  position: absolute;
+  top: -15px;
+  font-size: 1.2em;
+}
+.jsav-circuit-output.jsav-circuit-value-false:before,
+.jsav-circuit-output.jsav-circuit-value-true:before {
+  right: -15px;
+}
+.jsav-circuit-input.jsav-circuit-value-false:before,
+.jsav-circuit-input.jsav-circuit-value-true:before {
+  left: -15px;
+}
+.jsav-circuit-input.jsav-circuit-value-true:before,
+.jsav-circuit-output.jsav-circuit-value-true:before {
+  content: "1";
+}
+.jsav-circuit-input.jsav-circuit-value-false:before,
+.jsav-circuit-output.jsav-circuit-value-false:before {
+  content: "0";
+}
+.jsav-not.jsavhighlight path.componentbody {
+  fill: yellow;
+}
+.jsavedge {
+  stroke: #333;
+  stroke-width: 1px;
+}
+.jsav-circuit-input, .jsav-circuit-output {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: absolute;
+  border: 2px solid #333;
+  background-color: #fff;
+  z-index: 200;
+}
+.jsav-circuit-output {
+  right: -10px;
+  top: calc(50% - 10px);
+}
+.jsav-circuit-output:hover {
+  cursor: hand;
+}
+.jsav-circuit-input {
+  left: -10px;
+}
+.jsav-circuit-output:hover, .jsav-circuit-input.over {
+  box-shadow: 0 0 10px green;
+}
+.jsav-circuit-input.jsav-circuit-missing {
+  border-color: red;
+  box-shadow: 0 0 10px red;
+}
+.jsav-circuit-output.ui-draggable-dragging {
+  border: none;
+  background-color: transparent;
+  z-index: 0 !important;
+}
+.jsav-circuit-connector {
+  stroke-width: 5px;
+  stroke: #aaf;
+}
+.jsav-circuit-unconnected {
+  stroke: #faa;
+}

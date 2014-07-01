@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="115" height="100" viewBox="0, 0, 115, 100">
+  <g id="Background">
+    <rect x="0" y="0" width="115" height="100" fill="#FFFFFF"/>
+    <g stroke-width="1px">
+      <line x1="12" y1="0" x2="12" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="24" y1="0" x2="24" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="36" y1="0" x2="36" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="48" y1="0" x2="48" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="60" y1="0" x2="60" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="72" y1="0" x2="72" y2="100" stroke="#AAAAAA" stroke-opacity="0.5"/>
+      <line x1="84" y1="0" x2="84" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="96" y1="0" x2="96" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="108" y1="0" x2="108" y2="100" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="0" y1="12" x2="115" y2="12" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="0" y1="24" x2="115" y2="24" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="0" y1="36" x2="115" y2="36" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="0" y1="48" x2="115" y2="48" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="0" y1="60" x2="115" y2="60" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="0" y1="72" x2="115" y2="72" stroke="#AAAAAA" stroke-opacity="0.5"/>
+      <line x1="0" y1="84" x2="115" y2="84" stroke="#AAAAAA" stroke-opacity="0.25"/>
+      <line x1="0" y1="96" x2="115" y2="96" stroke="#AAAAAA" stroke-opacity="0.25"/>
+    </g>
+  </g>
+  <g id="Layer_1">
+    <g>
+      <path d="M0.5,1.125 L49.875,1.125 C77.144,1.125 99.25,23.231 99.25,50.5 C99.25,77.769 77.144,99.875 49.875,99.875 L0.5,99.875 L0.5,1.125" fill="#FFFFFF"/>
+      <path d="M0.5,1.125 L49.875,1.125 C77.144,1.125 99.25,23.231 99.25,50.5 C99.25,77.769 77.144,99.875 49.875,99.875 L0.5,99.875 L0.5,1.125" fill-opacity="0" stroke="#4C4C4C" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M106.75,58.25 C102.47,58.25 99,54.78 99,50.5 C99,46.22 102.47,42.75 106.75,42.75 C111.03,42.75 114.5,46.22 114.5,50.5 C114.5,54.78 111.03,58.25 106.75,58.25 z" fill="#FFFFFF"/>
+      <path d="M106.75,58.25 C102.47,58.25 99,54.78 99,50.5 C99,46.22 102.47,42.75 106.75,42.75 C111.03,42.75 114.5,46.22 114.5,50.5 C114.5,54.78 111.03,58.25 106.75,58.25 z" fill-opacity="0" stroke="#4C4C4C" stroke-width="2"/>
+    </g>
+  </g>
+</svg>

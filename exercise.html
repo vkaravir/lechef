@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JSAV Logical Circuit Editor</title>
+  <link rel="stylesheet" href="libs/JSAV.css" type="text/css" />
+  <link rel="stylesheet" href="circuits.css" />
+  <meta charset="UTF-8" />
+</head>
+
+<body>
+<style> /* editor styles */
+* {
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+.jsavcontainer {
+  position: absolute;
+  left: 10%;
+  top: 0;
+  height: 100%;
+  width: 90%;
+  border: none;
+  padding: 0;
+  background-color: transparent;
+}
+.jsavcontainer > svg {
+  z-index: 0;
+}
+.jsavcanvas {
+  height: 100%;
+  width: 100%;
+}
+.buttonpanel {
+  width: 10%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  background-color: #cfc;
+}
+.buttonpanel button {
+  width: 100px;
+  height: 100px;
+}
+button img {
+  width: 100%;
+  height: 100%;
+}
+</style>
+<style>
+</style>
+<div class="buttonpanel">
+  <button class="submit">Submit</button>
+  <button class="addNot" title="not"><img src="images/not.svg" /></button>
+  <button class="addAnd" title="and"><img src="images/and.svg" /></button>
+  <button class="addOr" title="or"><img src="images/or.svg" /></button>
+  <button class="addNor" title="nor"><img src="images/nor.svg" /></button>
+  <button class="addNand" title="nand"><img src="images/nand.svg" /></button>
+</div>
+<div class="jsavcontainer">
+</div>
+<script src="libs/jquery.min.js"></script>
+<script src="libs/jquery-ui.min.js"></script>
+<script src="libs/jquery.transit.js"></script>
+<script src="libs/raphael.js"></script>
+<script src="libs/JSAV.js"></script>
+<script src="circuits.js"></script>
+<script src="circuit-editor.js"></script>
+<script>
+  var jsav = new JSAV($(".jsavcontainer"));
+  //var editor = new JSAVCircuitEditor(jsav);
+
+  var JSAVCircuitExercise = function(jsav, options) {
+    this.options = $.extend({components: ["and", "not", "or"]}, options);
+    this.jsav = jsav;
+    this.editor = new JSAVCircuitEditor(jsav);
+    this.createToolbar();
+    this.initInputs();
+    this.initOutputs();
+  };
+  var exerproto = JSAVCircuitExercise.prototype;
+  exerproto.createToolbar = function() {
+    // TODO: create a button toolbar based on the components option
+  };
+  exerproto.initInputs = function() {
+    var input = this.options.input,
+        w = this.editor.circuit.element.outerWidth(),
+        h = this.editor.circuit.element.outerHeight();
+    var inputSpacing = 0.8*h / (input.length + 1);
+    for (var i = 0; i < input.length; i++) {
+      var inp = this.editor.circuit.inputComponent(input[i]);
+      this.editor.setInteractive(inp);
+      inp.element.css({top: Math.round(0.2*h + inputSpacing*i),
+                       left: Math.round(0.1*w) });
+    }
+  };
+  exerproto.initOutputs = function() {
+    var output = this.options.output,
+            w = this.editor.circuit.element.outerWidth(),
+            h = this.editor.circuit.element.outerHeight();
+    var outputSpacing = 0.8*h / (output.length + 1);
+    for (var i = 0; i < output.length; i++) {
+      var out = this.editor.circuit.outputComponent(output[i]);
+      this.editor.setInteractive(out);
+      out.element.css({top: Math.round(0.2*h + outputSpacing*i),
+                       left: Math.round(0.9*w) });
+    }
+  };
+  exerproto.grade = function() {
+    var checks = this.options.grading,
+        feedbackTxt = "",
+        feedback = {checks: [], success: true};
+    for (var i = 0; i < checks.length; i++) {
+      var c = checks[i];
+      this.editor.circuit.clearFeedback();
+      var res = this.editor.circuit.simulateOutput(c.input);
+      if (this.options.output.length === 1) {
+        correct = (c.output === res[this.options.output[0]])
+      }
+      console.log(correct?"YEY!":"NEY!", res, c.output);
+      feedbackTxt += "Testing with input: " + JSON.stringify(c.input) + "\n" +
+                  "Expected output: " + c.output + "\n" +
+                  "Output of your circuit: " + res[this.options.output[0]] + "\n" +
+              (correct?"PASSED":"FAILED") + "\n\n";
+      feedback.success = feedback.success && correct;
+      var checkFb = { input: $.extend({}, c.input), output: $.extend({}, res),
+                      expected: $.extend({}, c.output), correct: correct};
+      feedback.checks.push(checkFb);
+    }
+    feedback.circuit = this.editor.circuit.state();
+    alert(feedbackTxt);
+    return feedback;
+  };
+  var exer = new JSAVCircuitExercise(jsav, {input: ["x", "y"], output: ["g"],
+                                        grading: [/*{input: {x: true, y: false}, output: true},
+                                                  {input: {x: false, y: true}, output: true},
+                                                  {input: {x: true, y: true}, output: true},*/
+                                                  {input: {x: false, y: false}, output: false}]});
+
+  /*var xComp = editor.circuit.inputComponent("x"),
+      yComp = editor.circuit.inputComponent("y");
+  editor.setInteractive(xComp);
+  editor.setInteractive(yComp);
+  var out = editor.circuit.outputComponent("g");
+  editor.setInteractive(out);
+*/
+  $(".submit").click(function() {
+    var fb = exer.grade();
+    console.log(JSON.stringify(fb));
+    var $fb = $("<div>");
+    $fb.appendTo(document.body);
+    var fbjsav = new JSAV($fb);
+    var fbc = fbjsav.logicCircuit({});
+    fbc.state(fb.circuit);
+  });
+</script>
+</body>
+</html>
