@@ -1,71 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>JSAV Logical Circuit Test</title>
-  <link rel="stylesheet" href="libs/JSAV.css" type="text/css" />
+  <title>Logic Circuit Test</title>
   <link rel="stylesheet" href="circuits.css" />
   <meta charset="UTF-8" />
 </head>
 
 <body>
   <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
   </style>
-  <div class="jsavcontainer">
-    <div class="jsavcontrols"></div>
+  <div class="circuit-container">
   </div>
   <script src="libs/jquery.min.js"></script>
   <script src="libs/jquery-ui.min.js"></script>
-  <script src="libs/jquery.transit.js"></script>
-  <script src="libs/raphael.js"></script>
-  <script src="libs/JSAV.js"></script>
+  <script src="libs/snap.svg.js"></script>
   <script src="circuits.js"></script>
 
   <script>
-    JSAV_OPTIONS = {
-      element: $(".jsavcontainer")
-    };
-
-
-    //$.ajax({url: "not.svg", method: "GET", dataType: "text"}).done(function(res) {
-      //document.head.appendChild(res.documentElement);
-//      var not = res;
-
-      var jsav = new JSAV();
-      var circuit = jsav.logicCircuit();
-      //var g = jsav.ds.graph({layout: "automatic"});
-      //var andNode = g.addNode("AND");
-      //andNode.addClass("jsav-and");
-      //andNode.element.html(CIRCUIT_SHAPES.and)
+      var circuit = new LogicCircuit({element: $(".circuit-container")});
       var andNode = circuit.andComponent();
-
-/*      var notNode = g.addNode("NOT");
-      notNode.addClass("jsav-not");
-      notNode.element.html(CIRCUIT_SHAPES.not);
-      notNode.element.find(".output").on("mousedown", function(evt) {
-        console.log("down");
-        evt.stopPropagation();
-      });
-
-
-      var notOutputNode = g.addNode();
-      notOutputNode.addClass("jsav-connectpoint");
-
-      g.addEdge(notNode, andNode);
-      g.layout();*/
-
-      //notNode.highlight();
-
-      $(".jsavnode").draggable({
-        drag: function() {
-          var count = 0;
-          return function() {
-            if (count%5 === 0) {
-              //notNode.edgeTo(andNode).layout({record: false});
-            }
-            count = count++%5;
-          };
-        }()
-      });
-    //});
-
   </script>

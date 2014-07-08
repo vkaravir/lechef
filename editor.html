@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>JSAV Logical Circuit Editor</title>
-  <link rel="stylesheet" href="libs/JSAV.css" type="text/css" />
+  <title>Logic Circuit Editor</title>
   <link rel="stylesheet" href="circuits.css" />
   <meta charset="UTF-8" />
 </head>
@@ -17,7 +16,7 @@
     width: 100%;
     margin: 0;
   }
-  .jsavcontainer {
+  .circuit-container {
     position: absolute;
     left: 10%;
     top: 0;
@@ -27,12 +26,8 @@
     padding: 0;
     background-color: transparent;
   }
-  .jsavcontainer > svg {
+  .circuit-container > svg {
     z-index: 0;
-  }
-  .jsavcanvas {
-    height: 100%;
-    width: 100%;
   }
   .buttonpanel {
     width: 10%;
@@ -44,110 +39,34 @@
     background-color: #cfc;
   }
   .buttonpanel button {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
   }
   button img {
     width: 100%;
     height: 100%;
   }
-  .jsav-circuit-component {
-    border: 1px dotted rgba(200, 200, 200, 0.5);
-  }
 </style>
 <style>
 </style>
 <div class="buttonpanel">
-  <button class="addNot" title="not"><img src="images/not.svg" /></button>
-  <button class="addAnd" title="and"><img src="images/and.svg" /></button>
-  <button class="addOr" title="or"><img src="images/or.svg" /></button>
-  <button class="addNor" title="nor"><img src="images/nor.svg" /></button>
-  <button class="addNand" title="nand"><img src="images/nand.svg" /></button>
+  <button class="addnot" title="not"><img src="images/not.svg" /></button>
+  <button class="addand" title="and"><img src="images/and.svg" /></button>
+  <button class="addor" title="or"><img src="images/or.svg" /></button>
+  <button class="addnor" title="nor"><img src="images/nor.svg" /></button>
+  <button class="addnand" title="nand"><img src="images/nand.svg" /></button>
+  <button class="addxor" title="xor"><img src="images/xor.svg" /></button>
+  <button class="addeqv" title="eqv"><img src="images/eqv.svg" /></button>
 </div>
-<div class="jsavcontainer">
+<div class="circuit-container">
 </div>
 <script src="libs/jquery.min.js"></script>
 <script src="libs/jquery-ui.min.js"></script>
-<script src="libs/jquery.transit.js"></script>
-<script src="libs/raphael.js"></script>
-<script src="libs/JSAV.js"></script>
+<script src="libs/snap.svg.js"></script>
 <script src="circuits.js"></script>
 <script src="circuit-editor.js"></script>
 <script>
-
-
-  var jsav = new JSAV($(".jsavcontainer"));
-  var editor = new JSAVCircuitEditor(jsav);
- /* var circuit = jsav.logicCircuit({width: $(".jsavcanvas").width() + "px", height: $(".jsavcanvas").height() + "px"});
-  var canvasOffset = $(".jsavcontainer").offset();
-  var selected, path, pos;
-  console.log(canvasOffset);
-  $(".addNot").click(function() {
-    var comp = circuit.notComponent();
-    comp.element.draggable({
-      drag: function() {
-        comp.layout();
-      }
-    });
-    var x, y;
-    var elemWidth = comp.element.outerWidth(),
-        elemHeight = comp.element.outerHeight();
-    console.log(comp, comp._outputElement);
-    comp._outputElement.draggable({
-      revert: true,
-      start: function(evt, ui) {
-        var offset = comp.element.offset();
-        x = offset.left - canvasOffset.left + elemWidth;
-        y = offset.top - canvasOffset.top + (elemHeight/2.0);
-        path = jsav.g.path("M" + x + " " + y + " Q" + x + " " + y + " " + x + " " + y);
-        path.addClass("jsav-circuit-connector jsav-circuit-unconnected");
-      },
-      drag: function(evt, ui) {
-        var newX = ui.offset.left - canvasOffset.left + ui.helper.outerWidth()/2.0,
-            newY = ui.offset.top - canvasOffset.top + ui.helper.outerHeight()/2.0;
-        path.path("M" + x + " " + y + // move to the starting point
-                  " C" + (x + newX)/2.0 + " " + y + // cubic bezier, first control point
-                  " " + (x + newX)/2.0 + " " + newY + // cubic bezier, second control point
-                  " " + newX + " " + newY); // cubix bezier, end point
-      },
-      stop: function(evt, ui) {
-        console.log("stopped dragging", selected);
-        if (!selected) {
-          path.element.remove();
-        } else {
-          // connect the components in real life
-          selected.inputComponent(pos, comp, path);
-          //comp.outputComponent(selected, path);
-          path.clear();
-          path = null;
-          window.comp = selected;
-        }
-      }});
-    comp.element.find(".jsav-circuit-input").on({
-      mouseover: function() {
-        $(this).addClass("over");
-        console.log($(this).hasClass("over"), path);
-        if (path) {
-          selected = comp;
-          pos = $(this).data("pos");
-          path.removeClass("jsav-circuit-unconnected");
-        }
-      },
-      mouseout: function() {
-        $(this).removeClass("over");
-        if (path) {
-          selected = null;
-          path.addClass("jsav-circuit-unconnected");
-        }
-      }
-    })
-  });
-
-  $(".addAnd").click(function() {
-    var comp = circuit.andComponent();
-    comp.element.draggable();
-  });*/
-
+  var editor = new CircuitEditor({element: $(".circuit-container")});
 </script>
 </body>
 </html>

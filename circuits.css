@@ -1,112 +1,124 @@
-.jsav-circuit {
+.circuit {
   width: 100%;
   height: 100%;
 }
-.jsav-circuit-component {
-  min-width: 150px;
-  min-height: 100px;
-  position: absolute;
-  cursor: move;
+.circuit svg, .circuit svg * {
+  z-index: 10;
 }
-.jsav-circuit-component .jsavlabel {
+.circuit-component {
+  width: 150px;
+  height: 100px;
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  cursor: move;
+  z-index: 0;
+}
+.circuit-component .circuit-label {
   position: absolute;
   top: 40%;
   left: 25%;
   margin: 0;
 }
-.jsav-circuit-output-component .jsavlabel,
-.jsav-circuit-input-component .jsavlabel {
+.circuit-output-component .circuit-label,
+.circuit-input-component .circuit-label {
   font-size: 200%;
   top: 28%;
 }
-.jsav-circuit-output-component .jsavlabel {
+.circuit-output-component .circuit-label {
   left: 48%;
 }
-.jsav-circuit-input-component .jsavlabel {
+.circuit-input-component .circuit-label {
   left: 18%;
 }
+.circuit-xor .circuit-label,
+.circuit-eqv .circuit-label{
+  left: 40%;
+}
 
-.jsav-circuit-component path,
-.jsav-circuit-component rect,
-.jsav-circuit-component circle {
+.circuit-component path,
+.circuit-component rect,
+.circuit-component circle,
+.circuit-component polygon,
+.circuit-component line {
   stroke-width: 3;
   stroke-linejoin: round;
   stroke-linecap: round;
+  fill: none;
+  stroke: black;
 }
 
-.jsav-circuit-input-component,
-.jsav-circuit-output-component {
-  min-width: 80px;
-  min-height: 80px;
+.circuit-input-component,
+.circuit-output-component {
+  width: 80px;
+  height: 80px;
 }
 
-.jsav-circuit-input.jsav-circuit-value-false:before,
-.jsav-circuit-input.jsav-circuit-value-true:before,
-.jsav-circuit-output.jsav-circuit-value-false:before,
-.jsav-circuit-output.jsav-circuit-value-true:before {
+.circuit-input.circuit-value-false:before,
+.circuit-input.circuit-value-true:before,
+.circuit-output.circuit-value-false:before,
+.circuit-output.circuit-value-true:before {
   display: block;
   position: absolute;
   top: -15px;
   font-size: 1.2em;
 }
-.jsav-circuit-output.jsav-circuit-value-false:before,
-.jsav-circuit-output.jsav-circuit-value-true:before {
+.circuit-output.circuit-value-false:before,
+.circuit-output.circuit-value-true:before {
   right: -15px;
 }
-.jsav-circuit-input.jsav-circuit-value-false:before,
-.jsav-circuit-input.jsav-circuit-value-true:before {
+.circuit-input.circuit-value-false:before,
+.circuit-input.circuit-value-true:before {
   left: -15px;
 }
-.jsav-circuit-input.jsav-circuit-value-true:before,
-.jsav-circuit-output.jsav-circuit-value-true:before {
+.circuit-input.circuit-value-true:before,
+.circuit-output.circuit-value-true:before {
   content: "1";
 }
-.jsav-circuit-input.jsav-circuit-value-false:before,
-.jsav-circuit-output.jsav-circuit-value-false:before {
+.circuit-input.circuit-value-false:before,
+.circuit-output.circuit-value-false:before {
   content: "0";
 }
-.jsav-not.jsavhighlight path.componentbody {
-  fill: yellow;
-}
-.jsavedge {
-  stroke: #333;
-  stroke-width: 1px;
-}
-.jsav-circuit-input, .jsav-circuit-output {
+.circuit-input, .circuit-output {
   width: 20px;
   height: 20px;
   border-radius: 50%;
   position: absolute;
   border: 2px solid #333;
   background-color: #fff;
-  z-index: 200;
+  z-index: 100;
 }
-.jsav-circuit-output {
+.circuit-output {
   right: -10px;
   top: calc(50% - 10px);
 }
-.jsav-circuit-output:hover {
+.circuit-output:hover {
   cursor: hand;
 }
-.jsav-circuit-input {
+.circuit-input {
   left: -10px;
+  z-index: 200 !important;
 }
-.jsav-circuit-output:hover, .jsav-circuit-input.over {
+.circuit-input.over {
+  z-index: 200 !important;
+}
+.circuit-output:hover, .circuit-input.over {
   box-shadow: 0 0 10px green;
 }
-.jsav-circuit-input.jsav-circuit-missing {
+.circuit-input.circuit-missing {
   border-color: red;
   box-shadow: 0 0 10px red;
 }
-.jsav-circuit-output.ui-draggable-dragging {
+.circuit-output.ui-draggable-dragging {
   border: none;
   background-color: transparent;
   z-index: 0 !important;
 }
-.jsav-circuit-connector {
+.circuit-connector {
   stroke-width: 5px;
   stroke: #aaf;
+  fill: none;
 }
-.jsav-circuit-unconnected {
+.circuit-unconnected {
   stroke: #faa;
 }
