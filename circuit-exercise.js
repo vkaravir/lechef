@@ -51,13 +51,14 @@ exerproto.initOutputs = function() {
 exerproto.grade = function() {
   var checks = this.options.grading,
     feedbackTxt = "",
-    feedback = {checks: [], success: true};
+    feedback = {checks: [], success: true},
+    correct;
   for (var i = 0; i < checks.length; i++) {
     var c = checks[i];
     this.editor.circuit.clearFeedback();
     var res = this.editor.circuit.simulateOutput(c.input);
     if (this.options.output.length === 1) {
-      correct = (c.output === res[this.options.output[0]])
+      correct = (c.output === res[this.options.output[0]]);
     }
     feedbackTxt += "Testing with input: " + JSON.stringify(c.input) + "\n" +
       "Expected output: " + c.output + "\n" +
@@ -152,14 +153,14 @@ CircuitSimulationExercise.prototype.initInputs = function() {
 CircuitSimulationExercise.prototype.initToggles = function() {
   var toggles = circuit.element.find(".circuit-output, .circuit-input")
     .not(".circuit-value-true, .circuit-value-false")
-    .addClass(CIRCUIT_CONSTANTS.VALCLASS["UNKNOWN"])
+    .addClass(CIRCUIT_CONSTANTS.VALCLASS.UNKNOWN)
     .addClass("circuit-value-interactive");
   toggles.click(function (evt) {
     evt.stopPropagation();
     evt.preventDefault();
     var $this = $(this);
-    if ($this.hasClass(CIRCUIT_CONSTANTS.VALCLASS["UNKNOWN"])) {
-      $this.removeClass(CIRCUIT_CONSTANTS.VALCLASS["UNKNOWN"])
+    if ($this.hasClass(CIRCUIT_CONSTANTS.VALCLASS.UNKNOWN)) {
+      $this.removeClass(CIRCUIT_CONSTANTS.VALCLASS.UNKNOWN)
         .addClass(CIRCUIT_CONSTANTS.VALCLASS[false]);
     } else {
       $this.toggleClass(CIRCUIT_CONSTANTS.VALCLASS[false])
@@ -193,7 +194,7 @@ CircuitSimulationExercise.prototype.grade = function() {
   modelcircuit.simulateOutput(this.options.input);
   var modelComps = modelcircuit._components,
       stdComps = this.circuit._components,
-      mc, sc, fb, corr, state, val, success = true;
+      mc, sc, fb, corr, state, val, success = true,
       feedback = [],
       states = [];
   for (var i = 0, l = stdComps.length; i < l; i++) {

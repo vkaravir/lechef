@@ -1,10 +1,11 @@
+/* globals: $ */
 var Utils = {
   extend: function(constructor, superConstructor) {
-    function surrogateConstructor() {}
+    function SurrogateConstructor() {}
 
-    surrogateConstructor.prototype = superConstructor.prototype;
+    SurrogateConstructor.prototype = superConstructor.prototype;
 
-    var prototypeObject = new surrogateConstructor();
+    var prototypeObject = new SurrogateConstructor();
     prototypeObject.constructor = constructor;
 
     constructor.prototype = prototypeObject;
@@ -224,12 +225,12 @@ CircuitAndComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
   console.log(this._snap);
-  var path = this._snap.path("M" + 0.2*w + "," + 0.1*h + // move to x y
-                            " L" + 0.5*w + "," + 0.1*h + // line to x y
-                            " A" + 0.4*h + "," + 0.4*h + " 0 0 1 " +
-                                    0.5*w + "," + 0.9*h +
-                            " L" + 0.2*w + "," + 0.9*h + "Z");
-  var output = this._snap.line(0.8*w-5, 0.5*h, w, 0.5*h);
+  path = this._snap.path("M" + 0.2*w + "," + 0.1*h + // move to x y
+                         " L" + 0.5*w + "," + 0.1*h + // line to x y
+                         " A" + 0.4*h + "," + 0.4*h + " 0 0 1 " +
+                                0.5*w + "," + 0.9*h +
+                         " L" + 0.2*w + "," + 0.9*h + "Z");
+  this._snap.line(0.8*w-5, 0.5*h, w, 0.5*h);
 
   this._positionInputHandles(true);
 };
@@ -252,13 +253,13 @@ Utils.extend(CircuitNandComponent, CircuitComponent);
 CircuitNandComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-  var path = this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y
-    " L" + 0.5*w + " " + 0.1*h + // line to x y
-    " A" + 0.4*h + " " + 0.4*h + " 0 0 1 " +
-    0.5*w + " " + 0.9*h +
-    " L" + 0.2*w + " " + 0.9*h + "Z");
-  var output = this._snap.line(0.9*w-5, 0.5*h, w, 0.5*h);
-  var circle = this._snap.circle(0.8*w + 3, 0.5*h, 8);
+  path = this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y
+                        " L" + 0.5*w + " " + 0.1*h + // line to x y
+                        " A" + 0.4*h + " " + 0.4*h + " 0 0 1 " +
+                        0.5*w + " " + 0.9*h +
+                        " L" + 0.2*w + " " + 0.9*h + "Z");
+  this._snap.line(0.9*w-5, 0.5*h, w, 0.5*h);
+  this._snap.circle(0.8*w + 3, 0.5*h, 8);
 
   this._positionInputHandles(true);
 };
@@ -281,17 +282,17 @@ CircuitNotComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
 
-  var circle = this._snap.circle(0.7*w + 7, 0.5*h, 8);
-  var triangle = this._snap.polygon([0.2*w, 0.1*h, 0.2*w, 0.9*h, 0.7*w, 0.5*h]);
-  var output = this._snap.line(0.7*w + 16, 0.5*h, w, 0.5*h);
+  this._snap.circle(0.7*w + 7, 0.5*h, 8);
+  this._snap.polygon([0.2*w, 0.1*h, 0.2*w, 0.9*h, 0.7*w, 0.5*h]);
+  this._snap.line(0.7*w + 16, 0.5*h, w, 0.5*h);
 
   this._positionInputHandles(true);
 };
 CircuitNotComponent.prototype.simulateOutput = function(input) {
-  var input = this._inputs[0].simulateOutput(input);
-  this.element.find(".circuit-input").addClass(CIRCUIT_CONSTANTS.VALCLASS[input]);
-  this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[!input]);
-  return !input;
+  var inp = this._inputs[0].simulateOutput(input);
+  this.element.find(".circuit-input").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
+  this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[!inp]);
+  return !inp;
 };
 
 var CircuitOrComponent = function(circuit, options) {
@@ -302,11 +303,11 @@ Utils.extend(CircuitOrComponent, CircuitComponent);
 CircuitOrComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-  var output = this._snap.line(0.7*w + 16, 0.5*h, w, 0.5*h);
-  var path = this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y)
-                              " Q" + 0.6*w + " " + 0.15*h + " " + 0.8*w + " " + 0.5*h +
-                              " Q" + 0.6*w + " " + 0.85*h + " " + 0.2*w + " " + 0.9*h +
-                              " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.1*h);
+  this._snap.line(0.7*w + 16, 0.5*h, w, 0.5*h);
+  this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y)
+                  " Q" + 0.6*w + " " + 0.15*h + " " + 0.8*w + " " + 0.5*h +
+                  " Q" + 0.6*w + " " + 0.85*h + " " + 0.2*w + " " + 0.9*h +
+                  " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.1*h);
 
   var i = this._inputCount,
       inputspacing = 0.8*h / (i + 1);
@@ -337,12 +338,12 @@ Utils.extend(CircuitNorComponent, CircuitComponent);
 CircuitNorComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-  var output = this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
-  var path = this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y)
-    " Q" + 0.5*w + " " + 0.15*h + " " + 0.75*w + " " + 0.5*h +
-    " Q" + 0.5*w + " " + 0.85*h + " " + 0.2*w + " " + 0.9*h +
-    " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.1*h);
-  var circle = this._snap.circle(0.75*w + 8, 0.5*h, 8);
+  this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
+  this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y)
+                  " Q" + 0.5*w + " " + 0.15*h + " " + 0.75*w + " " + 0.5*h +
+                  " Q" + 0.5*w + " " + 0.85*h + " " + 0.2*w + " " + 0.9*h +
+                  " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.1*h);
+  this._snap.circle(0.75*w + 8, 0.5*h, 8);
 
   var i = this._inputCount,
     inputspacing = 0.8*h / (i + 1);
@@ -372,11 +373,11 @@ Utils.extend(CircuitXorComponent, CircuitComponent);
 CircuitXorComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
     h = this.element.outerHeight();
-  var output = this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
-  var path = this._snap.path("M" + 0.25*w + " " + 0.1*h + // move to x y)
-    " Q" + 0.6*w + " " + 0.15*h + " " + 0.85*w + " " + 0.5*h +
-    " Q" + 0.6*w + " " + 0.85*h + " " + 0.25*w + " " + 0.9*h +
-    " Q" + 0.35*w + " " + 0.5*h + " " + 0.25*w + " " + 0.1*h);
+  this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
+  this._snap.path("M" + 0.25*w + " " + 0.1*h + // move to x y)
+                  " Q" + 0.6*w + " " + 0.15*h + " " + 0.85*w + " " + 0.5*h +
+                  " Q" + 0.6*w + " " + 0.85*h + " " + 0.25*w + " " + 0.9*h +
+                  " Q" + 0.35*w + " " + 0.5*h + " " + 0.25*w + " " + 0.1*h);
   this._snap.path("M" + 0.2*w + " " + 0.1*h +
                   " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.9*h);
   var i = this._inputCount,
@@ -406,13 +407,13 @@ Utils.extend(CircuitEqvComponent, CircuitComponent);
 CircuitEqvComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
     h = this.element.outerHeight();
-  var output = this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
-  var path = this._snap.path("M" + 0.25*w + " " + 0.1*h + // move to x y)
-    " Q" + 0.6*w + " " + 0.15*h + " " + 0.75*w + " " + 0.5*h +
-    " Q" + 0.6*w + " " + 0.85*h + " " + 0.25*w + " " + 0.9*h +
-    " Q" + 0.35*w + " " + 0.5*h + " " + 0.25*w + " " + 0.1*h);
+  this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
+  this._snap.path("M" + 0.25*w + " " + 0.1*h + // move to x y)
+                  " Q" + 0.6*w + " " + 0.15*h + " " + 0.75*w + " " + 0.5*h +
+                  " Q" + 0.6*w + " " + 0.85*h + " " + 0.25*w + " " + 0.9*h +
+                  " Q" + 0.35*w + " " + 0.5*h + " " + 0.25*w + " " + 0.1*h);
   this._snap.path("M" + 0.2*w + " " + 0.1*h +
-    " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.9*h);
+                  " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.9*h);
   this._snap.circle(0.75*w + 8, 0.5*h, 8);
   var i = this._inputCount,
     inputspacing = 0.8*h / (i + 1);
@@ -441,7 +442,7 @@ Utils.extend(CircuitInputComponent, CircuitComponent);
 CircuitInputComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-  this._snap.line(0.6*w, 0.5*h, 1*w, 0.5*h);
+  this._snap.line(0.6*w, 0.5*h, w, 0.5*h);
   this._snap.rect(2, 0.2*h, 0.6*w, 0.6*h);
 };
 CircuitInputComponent.prototype.simulateOutput = function(input) {
@@ -449,7 +450,7 @@ CircuitInputComponent.prototype.simulateOutput = function(input) {
   this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
   return inp;
 };
-CircuitInputComponent.prototype.state = function(newState) {
+CircuitInputComponent.prototype.state = function() {
   return $.extend({name: "input", componentName: this._componentName, left: this.element.css("left"),
     top: this.element.css("top")}, this.options);
 };
@@ -476,7 +477,7 @@ CircuitOutputComponent.prototype.simulateOutput = function(input) {
   this.element.find(".circuit-input").addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
   return result;
 };
-CircuitOutputComponent.prototype.state = function(newState) {
+CircuitOutputComponent.prototype.state = function() {
   return $.extend({name: "output", componentName: this._componentName, left: this.element.css("left"),
     top: this.element.css("top")}, this.options);
 };
@@ -528,7 +529,7 @@ logicproto.eqvComponent = function(options) {
   var comp = new CircuitEqvComponent(this, options);
   this._components.push(comp);
   return comp;
-}
+};
 logicproto.inputComponent = function(label, options) {
   var opts = $.extend({inputCount: 0, componentName: label}, options);
   var comp = new CircuitInputComponent(this, opts);
@@ -548,9 +549,12 @@ logicproto.outputComponent = function(label, options) {
   return comp;
 };
 logicproto.simulateOutput = function(input) {
-  var result = {};
-  for (var output in this._outputs) {
-    result[output] = this._outputs[output].simulateOutput(input);
+  var result = {},
+      outs = this._outputs;
+  for (var output in outs) {
+    if (outs.hasOwnProperty(output)) {
+      result[output] = outs[output].simulateOutput(input);
+    }
   }
   return result;
 };
