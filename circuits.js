@@ -13,7 +13,11 @@ var Utils = {
 
 var CIRCUIT_CONSTANTS = {
   VALCLASS: {true: "circuit-value-true",
-            false: "circuit-value-false"}
+            false: "circuit-value-false",
+            UNKNOWN: "circuit-value-unknown",
+            null: "circuit-value-unknown"},
+  FEEDBACKCLASS: { true: "circuit-value-correct",
+                  false: "circuit-value-incorrect"}
 };
 
 // The super type for all the circuit components. No instances of
@@ -44,7 +48,7 @@ var compproto = CircuitComponent.prototype;
 //  - classNames:
 compproto.init = function(circuit, options) {
   this.circuit = circuit;
-  this.options = $.extend({inputCount: 2, output: true}, options);
+  this.options = $.extend({draggable: true, clearFeedbackOnDrag: false, inputCount: 2, output: true}, options);
   var svgId = "LCC" + new Date().getTime();
   var element = $("<div><svg id='" + svgId +
                   "'></svg><span class='circuit-label'>" + this._componentName.toUpperCase() +
@@ -87,6 +91,11 @@ compproto.init = function(circuit, options) {
 
   // draw the component shape inside the element
   this.drawComponent();
+
+  // make draggable if option set
+  if (this.options.draggable) {
+    this._draggable();
+  }
 };
 // dummy implementation for the drawComponent
 compproto.drawComponent = function() {};
@@ -192,6 +201,18 @@ compproto.validateInputs = function() {
 compproto.state = function() {
   return $.extend({name: this._componentName, left: this.element.css("left"),
           top: this.element.css("top")}, this.options);
+};
+compproto._draggable = function() {
+  this.element.draggable({
+    start: function() {
+      if (this.options.clearFeedbackOnDrag) {
+        self.circuit.clearFeedback();
+      }
+    }.bind(this),
+    drag: function() {
+      this.layout();
+    }.bind(this)
+  });
 };
 
 var CircuitAndComponent = function(circuit, options) {

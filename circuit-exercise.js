@@ -69,6 +69,7 @@ exerproto.grade = function() {
     feedback.checks.push(checkFb);
   }
   feedback.circuit = this.editor.circuit.state();
+  this.editor.circuit.clearFeedback();
   alert(feedbackTxt);
   return feedback;
 };
@@ -129,4 +130,156 @@ CircuitExerciseFeedback.prototype.initFeedback = function() {
 CircuitExerciseFeedback.prototype.initCircuit = function() {
   this.circuit = new LogicCircuit({element: this.element.find(".circuit")});
   this.circuit.state(this.feedback.circuit);
+};
+
+
+
+CircuitSimulationExercise = function(circuit, options) {
+  this.circuit = circuit;
+  this.options = $.extend({}, options);
+  this.initInputs();
+  this.initToggles();
+};
+CircuitSimulationExercise.prototype.initInputs = function() {
+  var inputValues = this.options.input;
+  var inputComponents = this.circuit._inputs;
+  for (var key in inputComponents) {
+    if (inputComponents.hasOwnProperty(key)) {
+      inputComponents[key].element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[inputValues[key]]);
+    }
+  }
+};
+CircuitSimulationExercise.prototype.initToggles = function() {
+  var toggles = circuit.element.find(".circuit-output, .circuit-input")
+    .not(".circuit-value-true, .circuit-value-false")
+    .addClass(CIRCUIT_CONSTANTS.VALCLASS["UNKNOWN"])
+    .addClass("circuit-value-interactive");
+  toggles.click(function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    var $this = $(this);
+    if ($this.hasClass(CIRCUIT_CONSTANTS.VALCLASS["UNKNOWN"])) {
+      $this.removeClass(CIRCUIT_CONSTANTS.VALCLASS["UNKNOWN"])
+        .addClass(CIRCUIT_CONSTANTS.VALCLASS[false]);
+    } else {
+      $this.toggleClass(CIRCUIT_CONSTANTS.VALCLASS[false])
+        .toggleClass(CIRCUIT_CONSTANTS.VALCLASS[true]);
+    }
+  });
+};
+CircuitSimulationExercise.prototype.grade = function() {
+  var outputValue = function(comp) {
+      if (comp.element.find(".circuit-output." + CIRCUIT_CONSTANTS.VALCLASS[true]).size() > 0) {
+        return true;
+      } else if (comp.element.find(".circuit-output." + CIRCUIT_CONSTANTS.VALCLASS[false]).size() > 0) {
+        return false;
+      } else {
+        return null;
+      }
+    },
+    inputValue = function(comp, pos) {
+      if (comp.element.find(".circuit-input." + CIRCUIT_CONSTANTS.VALCLASS[true] +
+        "[data-pos=" + pos + "]").size() > 0) {
+        return true;
+      } else if (comp.element.find(".circuit-input." + CIRCUIT_CONSTANTS.VALCLASS[false] +
+        "[data-pos=" + pos + "]").size() > 0) {
+        return false;
+      } else {
+        return null;
+      }
+    };
+  var modelcircuit = new LogicCircuit({});
+  modelcircuit.state(this.circuit.state());
+  modelcircuit.simulateOutput(this.options.input);
+  var modelComps = modelcircuit._components,
+      stdComps = this.circuit._components,
+      mc, sc, fb, corr, state, val, success = true;
+      feedback = [],
+      states = [];
+  for (var i = 0, l = stdComps.length; i < l; i++) {
+    mc = modelComps[i];
+    sc = stdComps[i];
+    if (!(sc instanceof CircuitInputComponent)) {
+      fb = {input: []};
+      feedback.push(fb);
+      state = {input: []};
+      states.push(state);
+      if (!(sc instanceof CircuitOutputComponent)) {
+        val = outputValue(sc);
+        corr = val === outputValue(mc);
+        success = success && corr;
+        fb.output = corr;
+        state.output = val;
+        if (corr) {
+          console.log("CORRECT", sc._componentName);
+        } else {
+          console.log("INCORRECT", sc._componentName);
+        }
+      }
+      for (var j = 0; j < sc._inputCount; j++) {
+        val = inputValue(sc, j);
+        corr = val === inputValue(mc, j);
+        success = success && corr;
+        fb.input.push(corr);
+        state.input.push(val);
+      }
+    } else {
+      feedback.push(null);
+      states.push(null);
+    }
+  }
+  modelcircuit.element.remove();
+  return {feedback: feedback, states: states, success: success, circuit: this.circuit.state()};
+};
+
+var CircuitSimulationFeedback = function(exeropts, feedback, options) {
+  this.options = $.extend({}, options);
+  this.exeropts = exeropts;
+  this.feedback = feedback;
+  if (!this.options.element) {
+    this.element = $("<div></div>");
+    this.element.appendTo(document.body);
+  } else {
+    this.element = $(this.options.element);
+  }
+  this.element.addClass("circuit-feedback");
+  this.element.html("<div class='circuit'></div>");
+  this.initCircuit();
+  this.initFeedback();
+
+  this.element.find("h2").click(function() {
+    this.element.remove();
+  }.bind(this));
+};
+CircuitSimulationFeedback.prototype.initCircuit = CircuitExerciseFeedback.prototype.initCircuit;
+CircuitSimulationFeedback.prototype.initFeedback = function() {
+  var comps = this.circuit._components,
+      feedback = this.feedback.feedback,
+      states = this.feedback.states,
+      c, state, fb;
+  var outputFeedback = function(comp, compFb, compState) {
+    var e = comp.element.find(".circuit-output");
+    e.addClass(CIRCUIT_CONSTANTS.VALCLASS[compState.output])
+      .addClass(CIRCUIT_CONSTANTS.FEEDBACKCLASS[compFb.output])
+      .addClass("circuit-value-interactive");
+  };
+  var inputFeedback = function(comp, pos, compFb, compState) {
+    var e = comp.element.find(".circuit-input[data-pos=" + pos + "]");
+    e.addClass(CIRCUIT_CONSTANTS.VALCLASS[compState.input[pos]])
+      .addClass(CIRCUIT_CONSTANTS.FEEDBACKCLASS[compFb.input[pos]])
+      .addClass("circuit-value-interactive");
+  };
+  for (var i = 0, l = comps.length; i < l; i++) {
+    c = comps[i];
+    if (!(c instanceof CircuitInputComponent)) {
+      fb = feedback[i];
+      state = states[i];
+      if (!(c instanceof CircuitOutputComponent)) {
+        outputFeedback(c, fb, state);
+      }
+      for (var j = c._inputCount; j--; ) {
+        inputFeedback(c, j, fb, state);
+      }
+    }
+  }
 };

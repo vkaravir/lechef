@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JSAV Logical Circuit Simulation Exercise</title>
+  <link rel="stylesheet" href="circuits.css" />
+  <meta charset="UTF-8" />
+</head>
+
+<body>
+<style> /* editor styles */
+* {
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+.circuit-exercise-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  border: none;
+  padding: 0;
+  background-color: transparent;
+}
+.circuit-exercise-container > svg {
+  z-index: 0;
+}
+.circuit-buttonpanel {
+  width: 10%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  background-color: #cfc;
+}
+.circuit-buttonpanel button {
+  width: 100px;
+  height: 100px;
+}
+button img {
+  width: 100%;
+  height: 100%;
+}
+
+
+/** styling the exercise feedback */
+.circuit-feedback {
+  background-color: white;
+  z-index: 300;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+.circuit-feedback * {
+  z-index: 300;
+  cursor: auto !important;
+}
+.circuit-feedback .circuit {
+  position: relative;
+}
+.circuit-input-output table {
+  margin-left: 20px;
+}
+.circuit-input-output tr {
+  position: relative;
+}
+.circuit-input-output tr:before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  left: 10px;
+  border: 10px solid transparent;
+}
+tr.circuit-correct {
+  background-color: greenyellow;
+}
+tr.circuit-incorrect {
+  background-color: rgb(255, 150, 150);
+}
+tr.circuit-active:before {
+  border-left-color: gray;
+}
+  .circuit-exercise-container {
+    margin-top: 20px;
+  }
+</style>
+<style>
+</style>
+<button id="submit">Submit</button>
+<div class="circuit-exercise-container"></div>
+<script src="libs/jquery-2.1.1.min.js"></script>
+<script src="libs/jquery-ui-1.11.min.js"></script>
+<script src="libs/snap.svg.js"></script>
+<script src="circuits.js"></script>
+<script src="circuit-editor.js"></script>
+<script src="circuit-exercise.js"></script>
+<script>
+  var circuit = new LogicCircuit({element: $(".circuit-exercise-container")});
+  var andComp = circuit.andComponent({left: 400, top: 150});
+  var in1 = circuit.inputComponent("x", {left: 50, top: 100});
+  var in2 = circuit.inputComponent("y", {left: 50, top: 200});
+  var notComp = circuit.notComponent({left: 200, top: 100});
+  var out = circuit.outputComponent("z", {left: 600, top: 150});
+  notComp.inputComponent(0, in1);
+  andComp.inputComponent(0, notComp);
+  andComp.inputComponent(1, in2);
+  out.inputComponent(0, andComp);
+
+  var exer = new CircuitSimulationExercise(circuit, {input: {x: true, y: false}});
+
+  $("#submit").click(function() {
+    console.log("submit..");
+    console.log(JSON.stringify(exer.grade()));
+    new CircuitSimulationFeedback(exer.options, exer.grade());
+  });
+</script>
+</body>
+</html>

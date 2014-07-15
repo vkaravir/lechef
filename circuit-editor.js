@@ -39,14 +39,6 @@ editorproto.initToolbar = function() {
 editorproto.setInteractive = function(comp) {
   var x, y,
       self = this;
-  comp.element.draggable({
-    start: function() {
-      self.circuit.clearFeedback();
-    },
-    drag: function() {
-      comp.layout();
-    }
-  });
   var elemWidth = comp.element.outerWidth(),
     elemHeight = comp.element.outerHeight(),
     canvasOffset = self.circuit.element.offset();
