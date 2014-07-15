@@ -19,9 +19,9 @@ exerproto.createToolbar = function() {
   }
   this.element.find(".circuit-buttonpanel").html(html);
   this.element.find(".submit").click(function() {
-    var fb = exer.grade();
-    new CircuitExerciseFeedback(exer, fb);
-  });
+    var fb = this.grade();
+    new CircuitExerciseFeedback(this.options, fb);
+  }.bind(this));
 
 };
 exerproto.initInputs = function() {
@@ -74,9 +74,9 @@ exerproto.grade = function() {
   return feedback;
 };
 
-var CircuitExerciseFeedback = function(exer, feedback, options) {
+var CircuitExerciseFeedback = function(exeropts, feedback, options) {
   this.options = $.extend({}, options);
-  this.exer = exer;
+  this.exeropts = exeropts;
   this.feedback = feedback;
   if (!this.options.element) {
     this.element = $("<div></div>");
@@ -95,9 +95,9 @@ var CircuitExerciseFeedback = function(exer, feedback, options) {
   }.bind(this));
 };
 CircuitExerciseFeedback.prototype.initFeedback = function() {
-  var outputKey = this.exer.options.output;
+  var outputKey = this.exeropts.output;
   var fbHTML = "<table><thead><tr>";
-  fbHTML += "<th>" + this.exer.options.input.join('</th><th>');
+  fbHTML += "<th>" + this.exeropts.input.join('</th><th>');
   fbHTML += "</th><th>" + outputKey + ' from your circuit</th>';
   fbHTML += "<th class='empty'></th><th>" + outputKey + " expected</th></tr></thead><tbody>";
 
@@ -105,8 +105,8 @@ CircuitExerciseFeedback.prototype.initFeedback = function() {
     var c = this.feedback.checks[i];
     fbHTML += "<tr data-check='" + i + "'";
     fbHTML += " class='" + (c.correct?"circuit-correct":"circuit-incorrect") + "'>";
-    for (var j = 0; j < this.exer.options.input.length; j++) {
-      fbHTML += "<td>" + c.input[this.exer.options.input[j]] + "</td>";
+    for (var j = 0; j < this.exeropts.input.length; j++) {
+      fbHTML += "<td>" + c.input[this.exeropts.input[j]] + "</td>";
     }
     var outVal = c.output[outputKey];
     if (outVal === null) { outVal = ""; }
