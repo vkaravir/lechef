@@ -35,7 +35,13 @@
 .circuit-eqv .circuit-label{
   left: 40%;
 }
-
+.circuit-halfadder-component text {
+  font-size: 150%;
+  font-weight: bolder;
+}
+.circuit-halfadder-component .circuit-label {
+  display: none;
+}
 .circuit-component path,
 .circuit-component rect,
 .circuit-component circle,

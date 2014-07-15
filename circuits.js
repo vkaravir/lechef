@@ -57,7 +57,6 @@ compproto.init = function(circuit, options) {
   element.addClass("circuit-component");
   element.addClass("circuit-" + this._componentName);
   if (options && options.classNames) { element.addClass(options.classNames); }
-  //element.html(CIRCUIT_SHAPES[this._componentName]);
   this.element = element;
   if (!this.options.element) {
     this.circuit.element.append(element);
@@ -482,6 +481,27 @@ CircuitOutputComponent.prototype.state = function() {
     top: this.element.css("top")}, this.options);
 };
 
+CircuitHalfAdderComponent = function(circuit, options) {
+  var opts = $.extend({}, options);
+  this._componentName = "+1/2";
+  opts.classNames = (opts.classNames || "") + " circuit-halfadder-component";
+  this.init(circuit, opts);
+};
+Utils.extend(CircuitHalfAdderComponent, CircuitComponent);
+CircuitHalfAdderComponent.prototype.drawComponent = function() {
+  var w = this.element.outerWidth(),
+      h = this.element.outerHeight();
+  this._snap.line(0.7*w, 0.5*h, w, 0.5*h);
+  this._snap.rect(0.2*w, 0.2*h, 0.5*w, 0.6*h);
+  this._snap.text(0.35*w, 0.45*h, "1");
+  this._snap.text(0.5*w, 0.7*h, "2");
+  this._snap.line(0.37*w, 0.67*h, 0.56*w, 0.30*h);
+  this._positionInputHandles(true);
+};
+CircuitHalfAdderComponent.prototype.simulateOutput = function(input) {
+  console.error("simulateOutput for half-adder not yet supported!");
+};
+
 
 var LogicCircuit = function(options) {
   this.element = options.element || $("<div />");
@@ -546,6 +566,11 @@ logicproto.outputComponent = function(label, options) {
   if (!this._outputs) { this._outputs = {}; }
   this._components.push(comp);
   this._outputs[label] = comp;
+  return comp;
+};
+logicproto.halfAdderComponent = function(options) {
+  var comp = new CircuitHalfAdderComponent(this, options);
+  this._components.push(comp);
   return comp;
 };
 logicproto.simulateOutput = function(input) {
