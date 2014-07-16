@@ -35,6 +35,9 @@
 .circuit-eqv .circuit-label{
   left: 40%;
 }
+.circuit-halfadder-component {
+  width: 120px;
+}
 .circuit-halfadder-component text {
   font-size: 150%;
   font-weight: bolder;
@@ -118,7 +121,7 @@
 }
 .circuit-output {
   right: -10px;
-  top: calc(50% - 10px);
+  top: calc(50% - 12px);
 }
 .circuit-output:hover {
   cursor: hand;

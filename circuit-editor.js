@@ -35,58 +35,62 @@ editorproto.initToolbar = function() {
     var comp = this.circuit.eqvComponent();
     this.setInteractive(comp);
   }.bind(this));
+  $(".addha").click(function() {
+    var comp = this.circuit.halfAdderComponent();
+    this.setInteractive(comp);
+  }.bind(this));
 };
 editorproto.setInteractive = function(comp) {
   var x, y,
-      self = this;
+      editor = this;
   var elemWidth = comp.element.outerWidth(),
     elemHeight = comp.element.outerHeight(),
-    canvasOffset = self.circuit.element.offset();
-  comp._outputElement.draggable({
+    canvasOffset = this.circuit.element.offset();
+  comp.element.find('.circuit-output').draggable({
     revert: true,
     helper: "clone",
     start: function(evt, ui) {
       var offset = comp.element.offset();
       x = offset.left - canvasOffset.left + elemWidth;
       y = offset.top - canvasOffset.top + (elemHeight/2.0);
-      self.path = self.circuit._snap.path("M" + x + " " + y + " Q" + x + " " + y + " " + x + " " + y);
-      self.path.addClass("circuit-connector circuit-unconnected");
-      self.circuit.clearFeedback();
+      editor.path = editor.circuit._snap.path("M" + x + " " + y + " Q" + x + " " + y + " " + x + " " + y);
+      editor.path.addClass("circuit-connector circuit-unconnected");
+      editor.circuit.clearFeedback();
     },
     drag: function(evt, ui) {
       var newX = ui.offset.left - canvasOffset.left + ui.helper.outerWidth()/2.0,
-        newY = ui.offset.top - canvasOffset.top + ui.helper.outerHeight()/2.0;
-      self.path.attr("path", "M" + x + " " + y + // move to the starting point
+          newY = ui.offset.top - canvasOffset.top + ui.helper.outerHeight()/2.0;
+      editor.path.attr("path", "M" + x + " " + y + // move to the starting point
         " C" + (x + newX)/2.0 + " " + y + // cubic bezier, first control point
         " " + (x + newX)/2.0 + " " + newY + // cubic bezier, second control point
         " " + newX + " " + newY); // cubix bezier, end point
     },
     stop: function(evt, ui) {
-      if (self.selected) {
-        self.selected.inputComponent(self.pos, comp);
+      if (editor.selected) {
+        //console.log("output position:", ui.helper.data("pos"));
+        editor.selected.inputComponent(editor.pos, ui.helper.data("pos"), comp);
       }
-      self.path.remove();
-      self.path = null;
-      self.selected = null;
+      editor.path.remove();
+      editor.path = null;
+      editor.selected = null;
     }.bind(this)});
   comp.element.find(".circuit-input").droppable({
     accept: ".circuit-output",
     drop: function(evt, ui) {
-      if (self.path) {
-        self.pos = $(this).data("pos");
-        self.selected = comp;
+      if (editor.path) {
+        editor.pos = $(this).data("pos");
+        editor.selected = comp;
       }
     },
     over: function(evt, ui) {
-      if (self.path) {
-        self.path.removeClass("circuit-unconnected");
+      if (editor.path) {
+        editor.path.removeClass("circuit-unconnected");
       }
     },
     out: function(evt, ui) {
-      if (self.path) {
-        self.path.addClass("circuit-unconnected");
+      if (editor.path) {
+        editor.path.addClass("circuit-unconnected");
       }
-      console.log("out");
     }
   });
 };
