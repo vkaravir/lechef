@@ -75,3 +75,41 @@ QUnit.test("Nand simulation", function(assert) {
   assert.ok(circ.simulateOutput({x: false, y: true}).z, "Testing NAND with input false, true");
   assert.ok(!circ.simulateOutput({x: true, y: true}).z, "Testing NAND with input true, true");
 });
+QUnit.test("Half-adder simulation", function(assert) {
+  var circ = initTestCircuit();
+  assert.ok(circ);
+  var adder = circ.halfAdderComponent();
+  var inpx = circ.inputComponent("x");
+  var inpy = circ.inputComponent("y");
+  adder.inputComponent(0, inpx);
+  adder.inputComponent(1, inpy);
+  var outS = circ.outputComponent("s");
+  var outC = circ.outputComponent("c");
+  outS.inputComponent(0, 0, adder);
+  outC.inputComponent(0, 1, adder);
+
+  assert.deepEqual(adder.simulateOutput({x: false, y: false}), [false, false], "Testing Half-adder with input false, false");
+  assert.deepEqual(adder.simulateOutput({x: true, y: false}), [true, false], "Testing Half-adder with input true, false");
+  assert.deepEqual(adder.simulateOutput({x: false, y: true}), [true, false], "Testing Half-adder with input false, true");
+  assert.deepEqual(adder.simulateOutput({x: true, y: true}), [false, true], "Testing Half-adder with input true, true");
+  console.log(circ.simulateOutput({x: true, y: false}));
+});
+QUnit.test("Half-substractor simulation", function(assert) {
+  var circ = initTestCircuit();
+  assert.ok(circ);
+  var substractor = circ.halfSubstractorComponent();
+  var inpx = circ.inputComponent("x");
+  var inpy = circ.inputComponent("y");
+  substractor.inputComponent(0, inpx);
+  substractor.inputComponent(1, inpy);
+  var outS = circ.outputComponent("s");
+  var outC = circ.outputComponent("c");
+  outS.inputComponent(0, 0, substractor);
+  outC.inputComponent(0, 1, substractor);
+
+  assert.deepEqual(substractor.simulateOutput({x: false, y: false}), [false, false], "Testing Half-sub with input false, false");
+  assert.deepEqual(substractor.simulateOutput({x: true, y: false}), [true, false], "Testing Half-sub with input true, false");
+  assert.deepEqual(substractor.simulateOutput({x: false, y: true}), [true, true], "Testing Half-sub with input false, true");
+  assert.deepEqual(substractor.simulateOutput({x: true, y: true}), [false, false], "Testing Half-sub with input true, true");
+  console.log(circ.simulateOutput({x: true, y: false}));
+});

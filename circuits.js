@@ -530,27 +530,21 @@ CircuitOutputComponent.prototype.state = function() {
 
 CircuitHalfAdderComponent = function(circuit, options) {
   var opts = $.extend({outputCount: 2}, options);
-  this._componentName = "+1/2";
-  opts.classNames = (opts.classNames || "") + " circuit-halfadder-component";
+  this._componentName = "halfadder";
   this.init(circuit, opts);
+  this.element.find(".circuit-label").html("&frac12;");
 };
 Utils.extend(CircuitHalfAdderComponent, CircuitComponent);
 CircuitHalfAdderComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-  var g = this._snap.group();
   // output line
-  g.add(this._snap.line(0.7*w, 0.5*h, w, 0.5*h));
+  this._snap.line(0.7*w, 0.5*h, w, 0.5*h);
   // output line downward
-  g.add(this._snap.line(0.45*w, 0.8*h, 0.45*w, h));
+  this._snap.line(0.45*w, 0.8*h, 0.45*w, h);
   // the component "body"
-  g.add(this._snap.rect(0.2*w, 0.2*h, 0.5*w, 0.6*h));
+  this._snap.rect(0.2*w, 0.2*h, 0.5*w, 0.6*h);
 
-  // draw the "half" sign
-  g.add(this._snap.text(0.35*w, 0.45*h, "1"));
-  g.add(this._snap.text(0.5*w, 0.7*h, "2"));
-  g.add(this._snap.line(0.37*w, 0.67*h, 0.56*w, 0.30*h));
-  this._g = g;
   this._positionInputHandles(true);
   this._outputElements[0].css({"top": 0.5*h - 0.5*this._outputElements[0].outerHeight(),
                                 "right": -0.5*this._outputElements[0].outerWidth()});
@@ -558,9 +552,36 @@ CircuitHalfAdderComponent.prototype.drawComponent = function() {
                                 "left": 0.45*w - 0.5*this._outputElements[1].outerWidth()});
 };
 CircuitHalfAdderComponent.prototype.simulateOutput = function(input) {
-  console.error("simulateOutput for half-adder not yet supported!");
+  var inp0 = this._inputs[0].simulateOutput(input);
+  this.element.find(".circuit-input[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
+  var inp1 = this._inputs[1].simulateOutput(input);
+  this.element.find(".circuit-input[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
+  var res0 = (inp0 || inp1) && !(inp0 && inp1),
+      res1 = inp0 && inp1;
+  this.element.find(".circuit-output[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
+  this.element.find(".circuit-output[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
+  console.log(res0, res1);
+  return [res0, res1];
 };
 
+CircuitHalfSubstractorComponent = function(circuit, options) {
+  var opts = $.extend({outputCount: 2}, options);
+  this._componentName = "halfsubstractor";
+  this.init(circuit, opts);
+  this.element.find(".circuit-label").html("-&frac12;")
+};
+Utils.extend(CircuitHalfSubstractorComponent, CircuitHalfAdderComponent);
+CircuitHalfSubstractorComponent.prototype.simulateOutput = function(input) {
+  var inp0 = this._inputs[0].simulateOutput(input);
+  this.element.find(".circuit-input[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
+  var inp1 = this._inputs[1].simulateOutput(input);
+  this.element.find(".circuit-input[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
+  var res0 = (inp0 || inp1) && !(inp0 && inp1),
+      res1 = !inp0 && inp1;
+  this.element.find(".circuit-output[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
+  this.element.find(".circuit-output[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
+  return [res0, res1];
+};
 
 var LogicCircuit = function(options) {
   this.element = options.element || $("<div />");
@@ -629,6 +650,11 @@ logicproto.outputComponent = function(label, options) {
 };
 logicproto.halfAdderComponent = function(options) {
   var comp = new CircuitHalfAdderComponent(this, options);
+  this._components.push(comp);
+  return comp;
+};
+logicproto.halfSubstractorComponent = function(options) {
+  var comp = new CircuitHalfSubstractorComponent(this, options);
   this._components.push(comp);
   return comp;
 };

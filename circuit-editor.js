@@ -39,6 +39,10 @@ editorproto.initToolbar = function() {
     var comp = this.circuit.halfAdderComponent();
     this.setInteractive(comp);
   }.bind(this));
+  $(".addhs").click(function() {
+    var comp = this.circuit.halfSubstractorComponent();
+    this.setInteractive(comp);
+  }.bind(this));
 };
 editorproto.setInteractive = function(comp) {
   var x, y,

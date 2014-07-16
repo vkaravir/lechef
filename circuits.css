@@ -35,15 +35,24 @@
 .circuit-eqv .circuit-label{
   left: 40%;
 }
-.circuit-halfadder-component {
+.circuit-halfadder,
+.circuit-halfsubstractor {
   width: 120px;
 }
-.circuit-halfadder-component text {
+/*.circuit-halfadder text {
   font-size: 150%;
   font-weight: bolder;
+}*/
+.circuit-halfadder .circuit-label {
+  font-size: 400%;
+  font-weight: bolder;
+  top: 15%;
 }
-.circuit-halfadder-component .circuit-label {
-  display: none;
+.circuit-halfsubstractor .circuit-label {
+  font-size: 320%;
+  font-weight: bolder;
+  top: 20%;
+  left: 20%;
 }
 .circuit-component path,
 .circuit-component rect,
