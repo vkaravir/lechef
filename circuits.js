@@ -21,6 +21,37 @@ var CIRCUIT_CONSTANTS = {
                   false: "circuit-value-incorrect"}
 };
 
+var CircuitConnection = function(outOf, outOfPos, into, intoPos) {
+  this._outOf = outOf;
+  this._outOfPos = outOfPos;
+  this._into = into;
+  this._intoPos = intoPos;
+  var path = outOf.circuit._snap.path("M0 0 L 100 100");
+  path.addClass("circuit-connector");
+  this._path = path;
+  this.positionPath();
+};
+CircuitConnection.prototype.positionPath = function() {
+  var end = this._into._getInputLocation(this._intoPos);
+  var start = this._outOf._getOutputLocation(this._outOfPos);
+  var endPos = this._into.element.position();
+  var startPos = this._outOf.element.position();
+  var endX = end.x + endPos.left,
+    endY = end.y + endPos.top,
+    startX = start.x + startPos.left,
+    startY = start.y + startPos.top,
+    ctrl1X, ctrl2X;
+  ctrl1X = startX + 80;
+  ctrl2X = endX - 80;
+  this._path.attr("path", "M" + startX + " " + startY + // move to the starting point
+                    " C" + ctrl1X + " " + startY + // cubic bezier, first control point
+                    " " + ctrl2X + " " + endY + // cubic bezier, second control point
+                    " " + endX + " " + endY);
+};
+CircuitConnection.prototype.destroy = function() {
+  this._path.remove();
+};
+
 // The super type for all the circuit components. No instances of
 // this type should be directly created. Instead, you should create
 // the actual components, like NotComponent.
@@ -49,7 +80,7 @@ var compproto = CircuitComponent.prototype;
 //  - classNames:
 compproto.init = function(circuit, options) {
   this.circuit = circuit;
-  this.options = $.extend({draggable: true, clearFeedbackOnDrag: false, inputCount: 2, output: true}, options);
+  this.options = $.extend({draggable: true, clearFeedbackOnDrag: false, inputCount: 2, outputCount: 1}, options);
   var svgId = "LCC" + new Date().getTime();
   var element = $("<div><svg id='" + svgId +
                   "'></svg><span class='circuit-label'>" + this._componentName.toUpperCase() +
@@ -68,18 +99,19 @@ compproto.init = function(circuit, options) {
 
   this._outputs = [];
   this._outputpaths = [];
-  if (this.options.output) {
+  this._outputElements = [];
+  this._outputCount = this.options.outputCount;
+  for (var i = 0; i < this._outputCount; i++) {
     var output = $("<div />");
     output.addClass("circuit-output");
+    output.attr("data-pos", i);
     this.element.append(output);
-    this._outputElement = output;
-  } else {
-    this._outputElement = $();
+    this._outputElements[i] = output;
   }
 
   this._inputElements = [];
   this._inputCount = this.options.inputCount;
-  for (var i = 0; i < this._inputCount; i++ ) {
+  for (i = 0; i < this._inputCount; i++ ) {
     var input = $("<div />");
     input.addClass("circuit-input");
     input.attr("data-pos", i);
@@ -99,61 +131,62 @@ compproto.init = function(circuit, options) {
 };
 // dummy implementation for the drawComponent
 compproto.drawComponent = function() {};
-compproto._outputComponent = function(comp, path) {
-  this._outputs.push(comp);
-  this._outputpaths.push(path);
+compproto._outputComponent = function(outpos, comp, path) {
+  if (!this._outputs[outpos]) {
+    this._outputs[outpos] = [];
+    this._outputpaths[outpos] = [];
+  }
+  this._outputs[outpos].push(comp);
+  this._outputpaths[outpos].push(path);
 };
-compproto.inputComponent = function(pos, comp) {
-  if (pos >= this._inputCount) { return; } // invalid position, return
-  this.removeInput(pos);
+compproto.inputComponent = function(inpos, outpos, comp) {
+  if (typeof outpos === "object") {
+    comp = outpos;
+    outpos = 0;
+  }
+  if (inpos >= this._inputCount || // invalid position, return
+      outpos >= comp._outputCount) { return; }
+  this.removeInput(inpos);
 
-  this._inputs[pos] = comp;
-  var path = this._createPath(pos, comp);
-  this._inputpaths[pos] = path;
-  comp._outputComponent(this, path);
+  this._inputs[inpos] = comp;
+  var path = new CircuitConnection(comp, outpos, this, inpos);
+  this._inputpaths[inpos] = path;
+  comp._outputComponent(outpos, this, path);
 };
 compproto._removeOutput = function(comp) {
-  var i = this._outputs.indexOf(comp);
-  this._outputs.splice(i, 1);
-  this._outputpaths.splice(i, 1);
+  for (var i = this._outputs.length; i--; ) {
+    var ind = this._outputs[i].indexOf(comp);
+    if (ind !== -1) {
+      this._outputs[i].splice(ind, 1);
+      this._outputpaths[i].splice(ind, 1);
+    }
+  }
 };
 compproto.removeInput = function(pos) {
   if (this._inputs[pos]) {
     this._inputs[pos]._removeOutput(this);
-    this._inputpaths[pos].remove();
+    this._inputpaths[pos].destroy();
     this._inputs[pos] = null;
     this._inputpaths[pos] = null;
   }
 };
-compproto._createPath = function(pos, comp) {
-  var path = this.circuit._snap.path("M0 0 L 100 100");
-  this._positionPath(pos, comp, path);
-  path.addClass("circuit-connector");
-  return path;
-};
-compproto._positionPath = function(pos, comp, path) {
-  var end = this._getInputLocation(pos);
-  var start = comp._getOutputLocation();
-  var myPos = this.element.position();
-  var compPos = comp.element.position();
-  var endX = end.x + myPos.left,
-    endY = end.y + myPos.top,
-    startX = start.x + compPos.left,
-    startY = start.y + compPos.top,
-    ctrl1X, ctrl2X;
-  ctrl1X = startX + 80;
-  ctrl2X = endX - 80;
-  path.attr("path", "M" + startX + " " + startY + // move to the starting point
-    " C" + ctrl1X + " " + startY + // cubic bezier, first control point
-    " " + ctrl2X + " " + endY + // cubic bezier, second control point
-    " " + endX + " " + endY);
-};
-compproto._getOutputLocation = function() {
-  return {x: this.element.outerWidth(), y: 0.5*this.element.outerHeight()};
+compproto._getOutputLocation = function(pos) {
+  var e = this._outputElements[pos],
+      ePos = e.position(),
+      w = e.outerWidth(),
+      h = e.outerHeight();
+  return { x: ePos.left + w/2.0, y: ePos.top + h/2.0 };
 };
 compproto._getInputLocation = function(pos) {
-  var h = this.element.outerHeight();
-  return {x: 0, y: 0.1*h + 0.8*h / (this._inputCount + 1)*(pos+1)};
+  var e = this._inputElements[pos],
+      ePos = e.position(),
+      w = e.outerWidth(),
+      h = e.outerHeight();
+  return { x: ePos.left + w/2.0, y: ePos.top + h/2.0 };
+};
+compproto._positionHandles = function(drawLines) {
+  this._positionInputHandles(drawLines);
+  this._positionOutputHandles();
 };
 compproto._positionInputHandles = function(drawLines) {
   var w = this.element.outerWidth(),
@@ -169,19 +202,33 @@ compproto._positionInputHandles = function(drawLines) {
     $(item).css("top", (0.1*h + inputspacing*(index+1) - $(item).outerHeight()/2.0) + "px");
   });
 };
+compproto._positionOutputHandles = function() {
+  var w = this.element.outerWidth(),
+    h = this.element.outerHeight(),
+    i = this._outputCount,
+    outputspacing = 0.8*h / (i + 1);
+  this.element.find(".circuit-output").each(function(index, item) {
+    $(item).css("top", (0.1*h) + outputspacing*(index+1) - $(item).outerHeight()/2.0 + "px");
+  });
+};
 compproto.layout = function() {
-  for (var i = 0; i < this._inputs.length; i++) {
+  for (var i = this._inputs.length; i--; ) {
     var input = this._inputs[i],
         inputpath = this._inputpaths[i];
     if (input && inputpath) {
-     this._positionPath(i, input, inputpath);
+      inputpath.positionPath();
     }
   }
-  for (i = 0; i < this._outputs.length; i++) {
-    var output = this._outputs[i],
-        outputpath = this._outputpaths[i];
-    if (output && outputpath) {
-      output._positionPath(output._inputs.indexOf(this), this, outputpath);
+  var outs;
+  for (i = this._outputs.length; i--; ) {
+    outs = this._outputs[i];
+    if (!outs) { continue; }
+    for (var j = 0; j < outs.length; j++) {
+      var output = outs[j],
+           outputpath = this._outputpaths[i][j];
+      if (output && outputpath) {
+        outputpath.positionPath();
+      }
     }
   }
 };
@@ -231,7 +278,7 @@ CircuitAndComponent.prototype.drawComponent = function() {
                          " L" + 0.2*w + "," + 0.9*h + "Z");
   this._snap.line(0.8*w-5, 0.5*h, w, 0.5*h);
 
-  this._positionInputHandles(true);
+  this._positionHandles(true);
 };
 CircuitAndComponent.prototype.simulateOutput = function(input) {
   var result = true;
@@ -260,7 +307,7 @@ CircuitNandComponent.prototype.drawComponent = function() {
   this._snap.line(0.9*w-5, 0.5*h, w, 0.5*h);
   this._snap.circle(0.8*w + 3, 0.5*h, 8);
 
-  this._positionInputHandles(true);
+  this._positionHandles(true);
 };
 CircuitNandComponent.prototype._andSimulateOutput = CircuitAndComponent.prototype.simulateOutput;
 CircuitNandComponent.prototype.simulateOutput = function(input) {
@@ -285,7 +332,7 @@ CircuitNotComponent.prototype.drawComponent = function() {
   this._snap.polygon([0.2*w, 0.1*h, 0.2*w, 0.9*h, 0.7*w, 0.5*h]);
   this._snap.line(0.7*w + 16, 0.5*h, w, 0.5*h);
 
-  this._positionInputHandles(true);
+  this._positionHandles(true);
 };
 CircuitNotComponent.prototype.simulateOutput = function(input) {
   var inp = this._inputs[0].simulateOutput(input);
@@ -315,7 +362,7 @@ CircuitOrComponent.prototype.drawComponent = function() {
     this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
   }
 
-  this._positionInputHandles(false);
+  this._positionHandles(false);
 };
 CircuitOrComponent.prototype.simulateOutput = function(input) {
   var result = this._inputs[0].simulateOutput(input);
@@ -351,7 +398,7 @@ CircuitNorComponent.prototype.drawComponent = function() {
     this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
   }
 
-  this._positionInputHandles(false);
+  this._positionHandles(false);
 };
 // output simulation; reuse what the or component would return and negate it
 CircuitNorComponent.prototype._orSimulateOutput = CircuitOrComponent.prototype.simulateOutput;
@@ -386,7 +433,7 @@ CircuitXorComponent.prototype.drawComponent = function() {
     this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
   }
 
-  this._positionInputHandles(false);
+  this._positionHandles(false);
 };
 CircuitXorComponent.prototype.simulateOutput = function(input) {
   var in1 = this._inputs[0].simulateOutput(input);
@@ -421,7 +468,7 @@ CircuitEqvComponent.prototype.drawComponent = function() {
     this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
   }
 
-  this._positionInputHandles(false);
+  this._positionHandles(false);
 };
 CircuitEqvComponent.prototype._xorSimulateOutput = CircuitXorComponent.prototype.simulateOutput;
 CircuitEqvComponent.prototype.simulateOutput = function(input) {
@@ -466,7 +513,7 @@ CircuitOutputComponent.prototype.drawComponent = function() {
       h = this.element.outerHeight();
   this._snap.line(0, 0.5*h, 0.4*w - 5, 0.5*h);
   this._snap.rect(0.4*w - 5, 0.2*h, 0.6*w, 0.6*h);
-  this._positionInputHandles(false);
+  this._positionHandles(false);
 };
 CircuitOutputComponent.prototype.simulateOutput = function(input) {
   var valid = this.validateInputs();
@@ -482,7 +529,7 @@ CircuitOutputComponent.prototype.state = function() {
 };
 
 CircuitHalfAdderComponent = function(circuit, options) {
-  var opts = $.extend({}, options);
+  var opts = $.extend({outputCount: 2}, options);
   this._componentName = "+1/2";
   opts.classNames = (opts.classNames || "") + " circuit-halfadder-component";
   this.init(circuit, opts);
@@ -491,12 +538,24 @@ Utils.extend(CircuitHalfAdderComponent, CircuitComponent);
 CircuitHalfAdderComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-  this._snap.line(0.7*w, 0.5*h, w, 0.5*h);
-  this._snap.rect(0.2*w, 0.2*h, 0.5*w, 0.6*h);
-  this._snap.text(0.35*w, 0.45*h, "1");
-  this._snap.text(0.5*w, 0.7*h, "2");
-  this._snap.line(0.37*w, 0.67*h, 0.56*w, 0.30*h);
+  var g = this._snap.group();
+  // output line
+  g.add(this._snap.line(0.7*w, 0.5*h, w, 0.5*h));
+  // output line downward
+  g.add(this._snap.line(0.45*w, 0.8*h, 0.45*w, h));
+  // the component "body"
+  g.add(this._snap.rect(0.2*w, 0.2*h, 0.5*w, 0.6*h));
+
+  // draw the "half" sign
+  g.add(this._snap.text(0.35*w, 0.45*h, "1"));
+  g.add(this._snap.text(0.5*w, 0.7*h, "2"));
+  g.add(this._snap.line(0.37*w, 0.67*h, 0.56*w, 0.30*h));
+  this._g = g;
   this._positionInputHandles(true);
+  this._outputElements[0].css({"top": 0.5*h - 0.5*this._outputElements[0].outerHeight(),
+                                "right": -0.5*this._outputElements[0].outerWidth()});
+  this._outputElements[1].css({"bottom": -0.5*this._outputElements[1].outerHeight(),
+                                "left": 0.45*w - 0.5*this._outputElements[1].outerWidth()});
 };
 CircuitHalfAdderComponent.prototype.simulateOutput = function(input) {
   console.error("simulateOutput for half-adder not yet supported!");
@@ -561,7 +620,7 @@ logicproto.inputComponent = function(label, options) {
   return comp;
 };
 logicproto.outputComponent = function(label, options) {
-  var opts = $.extend({output: false, inputCount: 1, componentName: label}, options);
+  var opts = $.extend({outputCount: 0, inputCount: 1, componentName: label}, options);
   var comp = new CircuitOutputComponent(this, opts);
   if (!this._outputs) { this._outputs = {}; }
   this._components.push(comp);
@@ -598,7 +657,8 @@ logicproto.state = function(newState) {
     for (i = 0; i < this._components.length; i++) {
       c = this._components[i];
       for (j = 0; j < c._inputs.length; j++) {
-        state.connections.push({to: i, from: this._components.indexOf(c._inputs[j]), pos: j});
+        state.connections.push({to: i, from: this._components.indexOf(c._inputs[j]),
+                                topos: j, frompos: c._inputpaths[j]._outOfPos});
       }
     }
     return state;
@@ -615,7 +675,7 @@ logicproto.state = function(newState) {
     }
     for (i = 0; i < newState.connections.length; i++) {
       c = newState.connections[i];
-      this._components[c.to].inputComponent(c.pos, this._components[c.from]);
+      this._components[c.to].inputComponent(c.topos, c.frompos, this._components[c.from]);
     }
   }
 };

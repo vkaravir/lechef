@@ -121,7 +121,6 @@
 }
 .circuit-output {
   right: -10px;
-  top: calc(50% - 12px);
 }
 .circuit-output:hover {
   cursor: hand;

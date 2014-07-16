@@ -42,17 +42,17 @@ editorproto.initToolbar = function() {
 };
 editorproto.setInteractive = function(comp) {
   var x, y,
-      editor = this;
-  var elemWidth = comp.element.outerWidth(),
-    elemHeight = comp.element.outerHeight(),
-    canvasOffset = this.circuit.element.offset();
+      editor = this,
+      canvasOffset = this.circuit.element.offset();
   comp.element.find('.circuit-output').draggable({
     revert: true,
     helper: "clone",
     start: function(evt, ui) {
-      var offset = comp.element.offset();
-      x = offset.left - canvasOffset.left + elemWidth;
-      y = offset.top - canvasOffset.top + (elemHeight/2.0);
+      var offset = comp.element.offset(),
+          helper = ui.helper,
+          helperPos = helper.position();
+      x = offset.left - canvasOffset.left + helperPos.left + helper.outerWidth();
+      y = offset.top - canvasOffset.top + helperPos.top + helper.outerHeight()/2.0;
       editor.path = editor.circuit._snap.path("M" + x + " " + y + " Q" + x + " " + y + " " + x + " " + y);
       editor.path.addClass("circuit-connector circuit-unconnected");
       editor.circuit.clearFeedback();
