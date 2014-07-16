@@ -198,18 +198,20 @@ compproto._positionInputHandles = function(drawLines) {
       this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w, 0.1 * h + inputspacing * (i + 1));
     }
   }
-  this.element.find(".circuit-input").each(function(index, item) {
-    $(item).css("top", (0.1*h + inputspacing*(index+1) - $(item).outerHeight()/2.0) + "px");
-  });
+  for (i = 0; i < this._inputCount; i++) {
+    var ie = this._inputElements[i];
+    ie.css("top", (0.1 * h + inputspacing * (i + 1) - ie.outerHeight() / 2.0) + "px");
+  }
 };
 compproto._positionOutputHandles = function() {
   var w = this.element.outerWidth(),
     h = this.element.outerHeight(),
     i = this._outputCount,
     outputspacing = 0.8*h / (i + 1);
-  this.element.find(".circuit-output").each(function(index, item) {
-    $(item).css("top", (0.1*h) + outputspacing*(index+1) - $(item).outerHeight()/2.0 + "px");
-  });
+  for (i = 0; i < this._outputCount; i++) {
+    var oe = this._outputElements[i];
+    oe.css("top", (0.1*h) + outputspacing*(i+1) - oe.outerHeight()/2.0 + "px");
+  }
 };
 compproto.layout = function() {
   for (var i = this._inputs.length; i--; ) {
@@ -237,7 +239,7 @@ compproto.validateInputs = function() {
   for (var i = this._inputCount; i--; ) {
     var input = this._inputs[i];
     if (!input) {
-      this.element.find(".circuit-input[data-pos=" + i + "]").addClass("circuit-missing");
+      this._inputElements[i].addClass("circuit-missing");
       valid = false;
     } else {
       valid = input.validateInputs() && valid;
@@ -284,10 +286,10 @@ CircuitAndComponent.prototype.simulateOutput = function(input) {
   var result = true;
   for (var i = 0; i < this._inputs.length; i++) {
     var res = this._inputs[i].simulateOutput(input);
-    this.element.find(".circuit-input[data-pos=" + i + "]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res]);
+    this._inputElements[i].addClass(CIRCUIT_CONSTANTS.VALCLASS[res]);
     result = result && res;
   }
-  this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+  this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
   return result;
 };
 
@@ -312,7 +314,7 @@ CircuitNandComponent.prototype.drawComponent = function() {
 CircuitNandComponent.prototype._andSimulateOutput = CircuitAndComponent.prototype.simulateOutput;
 CircuitNandComponent.prototype.simulateOutput = function(input) {
   var out = !this._andSimulateOutput(input);
-  this.element.find(".circuit-output")
+  this._outputElements[0]
               .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
               .addClass(CIRCUIT_CONSTANTS.VALCLASS[out]);
   return out;
@@ -336,8 +338,8 @@ CircuitNotComponent.prototype.drawComponent = function() {
 };
 CircuitNotComponent.prototype.simulateOutput = function(input) {
   var inp = this._inputs[0].simulateOutput(input);
-  this.element.find(".circuit-input").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
-  this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[!inp]);
+  this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
+  this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[!inp]);
   return !inp;
 };
 
@@ -366,13 +368,13 @@ CircuitOrComponent.prototype.drawComponent = function() {
 };
 CircuitOrComponent.prototype.simulateOutput = function(input) {
   var result = this._inputs[0].simulateOutput(input);
-  this.element.find(".circuit-input[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+  this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
   for (var i = 1; i < this._inputCount; i++) {
     var inp = this._inputs[i].simulateOutput(input);
-    this.element.find(".circuit-input[data-pos=" + i + "]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
+    this._inputElements[i].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
     result = result || inp;
   }
-  this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+  this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
   return result;
 };
 
@@ -404,9 +406,9 @@ CircuitNorComponent.prototype.drawComponent = function() {
 CircuitNorComponent.prototype._orSimulateOutput = CircuitOrComponent.prototype.simulateOutput;
 CircuitNorComponent.prototype.simulateOutput = function(input) {
   var result = !this._orSimulateOutput(input);
-  this.element.find(".circuit-output")
-              .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
-              .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+  this._outputElements[0]
+        .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
+        .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
   return result;
 };
 
@@ -437,11 +439,11 @@ CircuitXorComponent.prototype.drawComponent = function() {
 };
 CircuitXorComponent.prototype.simulateOutput = function(input) {
   var in1 = this._inputs[0].simulateOutput(input);
-  this.element.find(".circuit-input[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[in1]);
+  this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[in1]);
   var in2 = this._inputs[1].simulateOutput(input);
-  this.element.find(".circuit-input[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[in2]);
+  this._inputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[in2]);
   var out = ( in1 && !in2 ) || ( !in1 && in2 );
-  this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[out]);
+  this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[out]);
   return out;
 };
 
@@ -473,9 +475,9 @@ CircuitEqvComponent.prototype.drawComponent = function() {
 CircuitEqvComponent.prototype._xorSimulateOutput = CircuitXorComponent.prototype.simulateOutput;
 CircuitEqvComponent.prototype.simulateOutput = function(input) {
   var result = !this._xorSimulateOutput(input);
-  this.element.find(".circuit-output")
-          .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
-          .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+  this._outputElements[0]
+        .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
+        .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
   return result;
 };
 // component for input for the circuit
@@ -493,7 +495,7 @@ CircuitInputComponent.prototype.drawComponent = function() {
 };
 CircuitInputComponent.prototype.simulateOutput = function(input) {
   var inp = input[this._componentName];
-  this.element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
+  this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
   return inp;
 };
 CircuitInputComponent.prototype.state = function() {
@@ -520,7 +522,7 @@ CircuitOutputComponent.prototype.simulateOutput = function(input) {
   if (!valid) { return null; }
 
   var result = this._inputs[0].simulateOutput(input);
-  this.element.find(".circuit-input").addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+  this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
   return result;
 };
 CircuitOutputComponent.prototype.state = function() {
@@ -553,14 +555,13 @@ CircuitHalfAdderComponent.prototype.drawComponent = function() {
 };
 CircuitHalfAdderComponent.prototype.simulateOutput = function(input) {
   var inp0 = this._inputs[0].simulateOutput(input);
-  this.element.find(".circuit-input[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
+  this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
   var inp1 = this._inputs[1].simulateOutput(input);
-  this.element.find(".circuit-input[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
+  this._inputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
   var res0 = (inp0 || inp1) && !(inp0 && inp1),
       res1 = inp0 && inp1;
-  this.element.find(".circuit-output[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
-  this.element.find(".circuit-output[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
-  console.log(res0, res1);
+  this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
+  this._outputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
   return [res0, res1];
 };
 
@@ -573,13 +574,13 @@ CircuitHalfSubstractorComponent = function(circuit, options) {
 Utils.extend(CircuitHalfSubstractorComponent, CircuitHalfAdderComponent);
 CircuitHalfSubstractorComponent.prototype.simulateOutput = function(input) {
   var inp0 = this._inputs[0].simulateOutput(input);
-  this.element.find(".circuit-input[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
+  this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
   var inp1 = this._inputs[1].simulateOutput(input);
-  this.element.find(".circuit-input[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
+  this._inputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
   var res0 = (inp0 || inp1) && !(inp0 && inp1),
       res1 = !inp0 && inp1;
-  this.element.find(".circuit-output[data-pos=0]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
-  this.element.find(".circuit-output[data-pos=1]").addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
+  this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
+  this._outputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
   return [res0, res1];
 };
 

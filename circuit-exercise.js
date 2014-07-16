@@ -265,7 +265,7 @@ CircuitSimulationFeedback.prototype.initFeedback = function() {
       .addClass("circuit-value-interactive");
   };
   var inputFeedback = function(comp, pos, compFb, compState) {
-    var e = comp.element.find(".circuit-input[data-pos=" + pos + "]");
+    var e = comp._inputElements[pos];
     e.addClass(CIRCUIT_CONSTANTS.VALCLASS[compState.input[pos]])
       .addClass(CIRCUIT_CONSTANTS.FEEDBACKCLASS[compFb.input[pos]])
       .addClass("circuit-value-interactive");
