@@ -2,6 +2,9 @@
   width: 100%;
   height: 100%;
 }
+.circuit {
+  position: relative;
+}
 .circuit svg, .circuit svg * {
   z-index: 10;
 }
