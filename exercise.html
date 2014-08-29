@@ -17,10 +17,7 @@ html, body {
   margin: 0;
 }
 .circuit-exercise-container {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
+  height: 300px;
   width: 100%;
   border: none;
   padding: 0;
@@ -29,24 +26,6 @@ html, body {
 .circuit-exercise-container > svg {
   z-index: 0;
 }
-.circuit-buttonpanel {
-  width: 10%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-
-  background-color: #cfc;
-}
-.circuit-buttonpanel button {
-  width: 100px;
-  height: 100px;
-}
-button img {
-  width: 100%;
-  height: 100%;
-}
-
 
   /** styling the exercise feedback */
   .circuit-feedback {
@@ -91,7 +70,22 @@ button img {
 </style>
 <style>
 </style>
-<div class="circuit-exercise-container"></div>
+<h1>Circuit Exercise Example</h1>
+<div>Construct a circuit for this truth table:</div>
+<table>
+  <thead>
+    <tr><th>X</th><th>Y</th><th>G</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td>0</td><td>1</td><td>1</td></tr>
+    <tr><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td>0</td><td>0</td><td>0</td></tr>
+  </tbody>
+</table>
+<div style="position:relative;">
+  <div class="circuit-exercise-container"></div>
+</div>
 <script src="libs/jquery-2.1.1.min.js"></script>
 <script src="libs/jquery-ui-1.11.min.js"></script>
 <script src="libs/snap.svg.js"></script>
@@ -102,7 +96,6 @@ button img {
       {input: {x: false, y: true}, output: true},
       {input: {x: true, y: true}, output: true},
       {input: {x: false, y: false}, output: false}], buttons: ["and", "not", "or"]});
-
 </script>
 </body>
 </html>

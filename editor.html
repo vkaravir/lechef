@@ -17,11 +17,7 @@
     margin: 0;
   }
   .circuit-container {
-    position: absolute;
-    left: 10%;
-    top: 0;
-    height: 100%;
-    width: 90%;
+    position: relative;
     border: none;
     padding: 0;
     background-color: transparent;
@@ -29,45 +25,20 @@
   .circuit-container > svg {
     z-index: 0;
   }
-  .buttonpanel {
-    width: 10%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-
-    background-color: #cfc;
-  }
-  .buttonpanel button {
-    width: 80px;
-    height: 80px;
-  }
-  button img {
-    width: 100%;
-    height: 100%;
-  }
 </style>
 <style>
 </style>
-<div class="buttonpanel">
-  <button class="addnot" title="not"><img src="images/not.svg" /></button>
-  <button class="addand" title="and"><img src="images/and.svg" /></button>
-  <button class="addor" title="or"><img src="images/or.svg" /></button>
-  <button class="addnor" title="nor"><img src="images/nor.svg" /></button>
-  <button class="addnand" title="nand"><img src="images/nand.svg" /></button>
-  <button class="addxor" title="xor"><img src="images/xor.svg" /></button>
-  <button class="addeqv" title="eqv"><img src="images/eqv.svg" /></button>
-  <button class="addha" title="half adder"><img src="images/ha.svg" /></button>
-  <button class="addhs" title="half substractor"><img src="images/hs.svg" /></button>
-</div>
-<div class="circuit-container">
+<h1>Editor Example</h1>
+<div>
+  <div class="buttonpanel"></div>
+  <div class="circuit-container"></div>
 </div>
 <script src="libs/jquery-2.1.1.min.js"></script>
 <script src="libs/jquery-ui-1.11.min.js"></script>
 <script src="libs/snap.svg.js"></script>
 <script src="build/logic-circuit.js"></script>
 <script>
-  var editor = new CircuitEditor({element: $(".circuit-container")});
+  var editor = new CircuitEditor({element: $(".circuit-container"), buttonPanelElement: $(".buttonpanel")});
 </script>
 </body>
 </html>
