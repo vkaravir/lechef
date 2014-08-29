@@ -1,23 +1,23 @@
 var CircuitExercise = function(options) {
   this.options = $.extend({components: ["and", "not", "or"],
                             template: '<div class="circuit-buttonpanel" />' +
-                                      '<div class="circuit" />'}, options);
+                                      '<div class="circuit" />',
+                            addSubmit: true}, options);
   this.element = this.options.element;
   this.element.html(this.options.template);
-  this.createToolbar();
-  this.editor = new CircuitEditor($.extend({}, this.options, {element: this.element.find(".circuit")}));
+  this.editor = new CircuitEditor($.extend({}, this.options, {element: this.element.find(".circuit"),
+                                      buttonPanelElement: this.element.find(".circuit-buttonpanel")}));
+  if (this.options.addSubmit) {
+    this.addSubmitToToolbar();
+  }
+
   this.initInputs();
   this.initOutputs();
 };
 var exerproto = CircuitExercise.prototype;
-exerproto.createToolbar = function() {
-  var comps = this.options.components,
-      html = '<button class="submit">Submit</button>';
-  for (var i = 0; i < comps.length; i++) {
-    var c = comps[i];
-    html += '<button class="add' + c + '" title="' + c + '"><img src="images/' + c + '.svg" /></button>';
-  }
-  this.element.find(".circuit-buttonpanel").html(html);
+exerproto.addSubmitToToolbar = function() {
+  var $buttonPanel = this.options.buttonPanelElement || this.element.find(".circuit-buttonpanel");
+  $buttonPanel.prepend('<button class="submit">Submit</button>');
   this.element.find(".submit").click(function() {
     var fb = this.grade();
     new CircuitExerciseFeedback(this.options, fb);

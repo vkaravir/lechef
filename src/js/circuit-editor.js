@@ -2,45 +2,71 @@
  * Created by ville on 30/06/14.
  */
 var CircuitEditor = function(options) {
+  this.options = $.extend({useImages: false}, options);
+  this.element = this.options.element;
   this.circuit = new LogicCircuit(options);
+  this.createToolbar();
   this.initToolbar();
 };
 var editorproto = CircuitEditor.prototype;
+editorproto.createToolbar = function() {
+  var comps = this.options.components || ["and", "nand", "not", "or", "nor", "xor", "eqv"],
+      html = "";
+  for (var i = 0; i < comps.length; i++) {
+    var c = comps[i];
+    html += '<button class="add' + c + '" title="' + c + '">' +
+            (this.options.useImages?'<img src="images/' + c + '.svg" />': c.toUpperCase()) +
+            '</button>';
+  }
+  var $buttonPanel = this.options.buttonPanelElement || this.element.find(".circuit-buttonpanel");
+  $buttonPanel.html(html);
+  this.buttonPanel = $buttonPanel;
+};
 editorproto.initToolbar = function() {
-  $(".addnot").click(function() {
+  var $buttonPanel = this.buttonPanel;
+  $(".addnot", $buttonPanel).click(function() {
     var comp = this.circuit.notComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addand").click(function() {
+  $(".addand", $buttonPanel).click(function() {
     var comp = this.circuit.andComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addnand").click(function() {
+  $(".addnand", $buttonPanel).click(function() {
     var comp = this.circuit.nandComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addor").click(function() {
+  $(".addor", $buttonPanel).click(function() {
     var comp = this.circuit.orComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addnor").click(function() {
+  $(".addnor", $buttonPanel).click(function() {
     var comp = this.circuit.norComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addxor").click(function() {
+  $(".addxor", $buttonPanel).click(function() {
     var comp = this.circuit.xorComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addeqv").click(function() {
+  $(".addeqv", $buttonPanel).click(function() {
     var comp = this.circuit.eqvComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addha").click(function() {
+  $(".addha", $buttonPanel).click(function() {
     var comp = this.circuit.halfAdderComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
-  $(".addhs").click(function() {
+  $(".addhs", $buttonPanel).click(function() {
     var comp = this.circuit.halfSubstractorComponent();
+    this.element.trigger("circuit-changed");
     this.setInteractive(comp);
   }.bind(this));
 };
@@ -71,12 +97,12 @@ editorproto.setInteractive = function(comp) {
     },
     stop: function(evt, ui) {
       if (editor.selected) {
-        //console.log("output position:", ui.helper.data("pos"));
         editor.selected.inputComponent(editor.pos, ui.helper.data("pos"), comp);
       }
       editor.path.remove();
       editor.path = null;
       editor.selected = null;
+      editor.element.trigger("circuit-changed");
     }.bind(this)});
   comp.element.find(".circuit-input").droppable({
     accept: ".circuit-output",
@@ -84,6 +110,7 @@ editorproto.setInteractive = function(comp) {
       if (editor.path) {
         editor.pos = $(this).data("pos");
         editor.selected = comp;
+        editor.element.trigger("circuit-changed");
       }
     },
     over: function(evt, ui) {
@@ -97,4 +124,15 @@ editorproto.setInteractive = function(comp) {
       }
     }
   });
+};
+editorproto.state = function(newState) {
+  if (typeof newState === "undefined") {
+    return this.circuit.state();
+  } else {
+    this.circuit.state(newState);
+    var comps = this.circuit._components;
+    for (var i = comps.length; i--; ) {
+      this.setInteractive(comps[i]);
+    }
+  }
 };

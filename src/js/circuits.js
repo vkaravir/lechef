@@ -248,8 +248,9 @@ compproto.validateInputs = function() {
   return valid;
 };
 compproto.state = function() {
-  return $.extend({name: this._componentName, left: this.element.css("left"),
-          top: this.element.css("top")}, this.options);
+  return $.extend({name: this._componentName},
+                  this.options,
+                  {left: this.element.css("left"), top: this.element.css("top")});
 };
 compproto._draggable = function() {
   this.element.draggable({
@@ -260,6 +261,9 @@ compproto._draggable = function() {
     }.bind(this),
     drag: function() {
       this.layout();
+    }.bind(this),
+    stop: function() {
+      this.circuit.element.trigger("circuit-changed");
     }.bind(this)
   });
 };
@@ -272,7 +276,6 @@ Utils.extend(CircuitAndComponent, CircuitComponent);
 CircuitAndComponent.prototype.drawComponent = function() {
   var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-  console.log(this._snap);
   path = this._snap.path("M" + 0.2*w + "," + 0.1*h + // move to x y
                          " L" + 0.5*w + "," + 0.1*h + // line to x y
                          " A" + 0.4*h + "," + 0.4*h + " 0 0 1 " +
@@ -499,8 +502,8 @@ CircuitInputComponent.prototype.simulateOutput = function(input) {
   return inp;
 };
 CircuitInputComponent.prototype.state = function() {
-  return $.extend({name: "input", componentName: this._componentName, left: this.element.css("left"),
-    top: this.element.css("top")}, this.options);
+  return $.extend({name: "input", componentName: this._componentName}, this.options,
+        { left: this.element.css("left"), top: this.element.css("top")});
 };
 
 // component for output of the circuit
