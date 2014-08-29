@@ -22,7 +22,6 @@ exerproto.createToolbar = function() {
     var fb = this.grade();
     new CircuitExerciseFeedback(this.options, fb);
   }.bind(this));
-
 };
 exerproto.initInputs = function() {
   var input = this.options.input,
