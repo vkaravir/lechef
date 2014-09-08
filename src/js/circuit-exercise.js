@@ -150,10 +150,11 @@ CircuitSimulationExercise.prototype.initInputs = function() {
   }
 };
 CircuitSimulationExercise.prototype.initToggles = function() {
-  var toggles = circuit.element.find(".circuit-output, .circuit-input")
+  var toggles = this.circuit.element.find(".circuit-output, .circuit-input")
     .not(".circuit-value-true, .circuit-value-false")
     .addClass(CIRCUIT_CONSTANTS.VALCLASS.UNKNOWN)
     .addClass("circuit-value-interactive");
+  var circuit = this.circuit;
   toggles.click(function (evt) {
     evt.stopPropagation();
     evt.preventDefault();
@@ -165,6 +166,7 @@ CircuitSimulationExercise.prototype.initToggles = function() {
       $this.toggleClass(CIRCUIT_CONSTANTS.VALCLASS[false])
         .toggleClass(CIRCUIT_CONSTANTS.VALCLASS[true]);
     }
+    circuit.element.trigger("circuit-changed");
   });
 };
 CircuitSimulationExercise.prototype.grade = function() {
@@ -210,11 +212,6 @@ CircuitSimulationExercise.prototype.grade = function() {
         success = success && corr;
         fb.output = corr;
         state.output = val;
-        if (corr) {
-          console.log("CORRECT", sc._componentName);
-        } else {
-          console.log("INCORRECT", sc._componentName);
-        }
       }
       for (var j = 0; j < sc._inputCount; j++) {
         val = inputValue(sc, j);
