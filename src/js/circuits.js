@@ -495,6 +495,7 @@ CircuitInputComponent.prototype.drawComponent = function() {
       h = this.element.outerHeight();
   this._snap.line(0.6*w, 0.5*h, w, 0.5*h);
   this._snap.rect(2, 0.2*h, 0.6*w, 0.6*h);
+  this._positionHandles(false);
 };
 CircuitInputComponent.prototype.simulateOutput = function(input) {
   var inp = input[this._componentName];
