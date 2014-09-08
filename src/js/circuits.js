@@ -696,9 +696,9 @@ logicproto.state = function(newState) {
     for (i = 0; i < newState.components.length; i++) {
       c = newState.components[i];
       if (c.name === "input") {
-        newC = this.inputComponent("", c);
+        newC = this.inputComponent(c.componentName, c);
       } else if (c.name === "output") {
-        newC = this.outputComponent("", c);
+        newC = this.outputComponent(c.componentName, c);
       } else {
         newC = this[c.name + "Component"](c);
       }
