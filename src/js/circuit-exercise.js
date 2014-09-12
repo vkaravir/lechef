@@ -49,7 +49,6 @@ exerproto.initOutputs = function() {
 };
 exerproto.grade = function() {
   var checks = this.options.grading,
-    feedbackTxt = "",
     feedback = {checks: [], success: true},
     correct;
   for (var i = 0; i < checks.length; i++) {
@@ -59,10 +58,6 @@ exerproto.grade = function() {
     if (this.options.output.length === 1) {
       correct = (c.output === res[this.options.output[0]]);
     }
-    feedbackTxt += "Testing with input: " + JSON.stringify(c.input) + "\n" +
-      "Expected output: " + c.output + "\n" +
-      "Output of your circuit: " + res[this.options.output[0]] + "\n" +
-      (correct?"PASSED":"FAILED") + "\n\n";
     feedback.success = feedback.success && correct;
     var checkFb = { input: $.extend({}, c.input), output: $.extend({}, res),
       expected: c.output, correct: correct};
@@ -70,7 +65,6 @@ exerproto.grade = function() {
   }
   feedback.circuit = this.editor.circuit.state();
   this.editor.circuit.clearFeedback();
-  alert(feedbackTxt);
   return feedback;
 };
 
