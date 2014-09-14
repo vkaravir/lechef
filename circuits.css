@@ -164,3 +164,26 @@
 .circuit-unconnected {
   stroke: #faa;
 }
+.circuit-input-output table {
+  margin-left: 20px;
+}
+.circuit-input-output tr {
+  position: relative;
+}
+.circuit-input-output tr:before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  left: 10px;
+  border: 10px solid transparent;
+}
+.circuit-feedback tr.circuit-correct {
+  background-color: greenyellow;
+}
+.circuit-feedback tr.circuit-incorrect {
+  background-color: rgb(255, 150, 150);
+}
+.circuit-feedback tr.circuit-active:before {
+  border-left-color: gray;
+}
