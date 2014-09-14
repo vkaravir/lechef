@@ -72,24 +72,26 @@
   };
   editorproto.setInteractive = function (comp) {
     var x, y,
-      editor = this,
-      canvasOffset = this.circuit.element.offset();
+      editor = this;
     comp.element.find('.circuit-output').draggable({
       revert: true,
       helper: "clone",
       start: function (evt, ui) {
-        var offset = comp.element.offset(),
-          helper = ui.helper,
-          helperPos = helper.position();
-        x = offset.left - canvasOffset.left + helperPos.left + helper.outerWidth();
-        y = offset.top - canvasOffset.top + helperPos.top + helper.outerHeight() / 2.0;
+        var pos = comp.element.position(),
+            helper = ui.helper,
+            helperPos = helper.position();
+        x = pos.left + helperPos.left + helper.outerWidth();
+        y = pos.top + helperPos.top + helper.outerHeight() / 2.0;
         editor.path = editor.circuit._snap.path("M" + x + " " + y + " Q" + x + " " + y + " " + x + " " + y);
         editor.path.addClass("circuit-connector circuit-unconnected");
         editor.circuit.clearFeedback();
       },
       drag: function (evt, ui) {
-        var newX = ui.offset.left - canvasOffset.left + ui.helper.outerWidth() / 2.0,
-          newY = ui.offset.top - canvasOffset.top + ui.helper.outerHeight() / 2.0;
+        var pos = comp.element.position(),
+            helper = ui.helper,
+            helperPos = helper.position();
+        var newX = pos.left + helperPos.left + helper.outerWidth() / 2.0,
+          newY = pos.top + helperPos.top + helper.outerHeight() / 2.0;
         editor.path.attr("path", "M" + x + " " + y + // move to the starting point
           " C" + (x + newX) / 2.0 + " " + y + // cubic bezier, first control point
           " " + (x + newX) / 2.0 + " " + newY + // cubic bezier, second control point
