@@ -612,7 +612,7 @@
     CircuitOutputComponent: CircuitOutputComponent,
     CircuitHalfAdderComponent: CircuitHalfAdderComponent,
     CircuitHalfSubstractorComponent: CircuitHalfSubstractorComponent
-  }
+  };
 
   var logicproto = LogicCircuit.prototype;
   logicproto.andComponent = function(options) {
@@ -703,8 +703,10 @@
       for (i = 0; i < this._components.length; i++) {
         c = this._components[i];
         for (j = 0; j < c._inputs.length; j++) {
-          state.connections.push({to: i, from: this._components.indexOf(c._inputs[j]),
-                                  topos: j, frompos: c._inputpaths[j]._outOfPos});
+          if (c._inputpaths[j]) {
+            state.connections.push({to: i, from: this._components.indexOf(c._inputs[j]),
+                                   topos: j, frompos: c._inputpaths[j]._outOfPos});
+          }
         }
       }
       return state;
