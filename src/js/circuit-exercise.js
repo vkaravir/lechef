@@ -103,15 +103,17 @@
       fbHTML += "<tr data-check='" + i + "'";
       fbHTML += " class='" + (c.correct ? "circuit-correct" : "circuit-incorrect") + "'>";
       for (var j = 0; j < this.exeropts.input.length; j++) {
-        fbHTML += "<td>" + c.input[this.exeropts.input[j]] + "</td>";
+        fbHTML += "<td>" + (c.input[this.exeropts.input[j]]?"1":"0") + "</td>";
       }
       var outVal = c.output[outputKey];
       if (outVal === null) {
         outVal = "";
+      } else {
+        outVal = (outVal?"1":"0");
       }
       fbHTML += "<td>" + outVal + "</td>";
       fbHTML += "<td class='empty'></td>";
-      fbHTML += "<td>" + JSON.stringify(c.expected) + "</td>";
+      fbHTML += "<td>" + (JSON.stringify(c.expected)?"1":"0") + "</td>";
       fbHTML += "</tr>";
     }
     fbHTML += "</tbody></table>";
