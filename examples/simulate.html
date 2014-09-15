@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>JSAV Logical Circuit Simulation Exercise</title>
-  <link rel="stylesheet" href="circuits.css" />
+  <title>Logical Circuit Simulation Exercise</title>
+  <link rel="stylesheet" href="../circuits.css" />
   <meta charset="UTF-8" />
 </head>
 
@@ -88,10 +88,10 @@ button img {
 </style>
 <button id="submit">Submit</button>
 <div class="circuit-exercise-container"></div>
-<script src="libs/jquery-2.1.1.min.js"></script>
-<script src="libs/jquery-ui-1.11.min.js"></script>
-<script src="libs/snap.svg.js"></script>
-<script src="build/logic-circuit.js"></script>
+<script src="../libs/jquery-2.1.1.min.js"></script>
+<script src="../libs/jquery-ui-1.11.min.js"></script>
+<script src="../libs/snap.svg.js"></script>
+<script src="../build/logic-circuit.js"></script>
 <script>
   var circuit = new LogicCircuit({element: $(".circuit-exercise-container")});
   var andComp = circuit.andComponent({left: 400, top: 150});
@@ -107,8 +107,6 @@ button img {
   var exer = new CircuitSimulationExercise(circuit, {input: {x: true, y: false}});
 
   $("#submit").click(function() {
-    console.log("submit..");
-    console.log(JSON.stringify(exer.grade()));
     new CircuitSimulationFeedback(exer.options, exer.grade());
   });
 </script>
