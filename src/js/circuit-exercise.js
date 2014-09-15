@@ -1,11 +1,31 @@
 /* global $ Snap */
 (function() {
   "use strict";
+
+  var TRANSLATIONS = {
+    "en": {
+      SUBMIT: "Submit",
+      YOUR_CIRCUIT: "from your circuit",
+      EXPECTED: "expected"
+    },
+    "fi": {
+      SUBMIT: "Lähetä",
+      YOUR_CIRCUIT: "piiristäsi",
+      EXPECTED: "odotettu"
+    }
+  };
+  var getLocalizedString = function(lang, strkey) {
+    if (!TRANSLATIONS[lang] ||!TRANSLATIONS[lang][strkey]) {
+      return strkey;
+    }
+    return TRANSLATIONS[lang][strkey];
+  };
   var CircuitExercise = function (options) {
     this.options = $.extend({components: ["and", "not", "or"],
       template: '<div class="circuit-buttonpanel" />' +
         '<div class="circuit" />',
       addSubmit: true}, options);
+    this.lang = this.options.language || "en";
     this.element = this.options.element;
     this.element.html(this.options.template);
     this.editor = new CircuitEditor($.extend({}, this.options, {element: this.element.find(".circuit"),
@@ -20,7 +40,7 @@
   var exerproto = CircuitExercise.prototype;
   exerproto.addSubmitToToolbar = function () {
     var $buttonPanel = this.options.buttonPanelElement || this.element.find(".circuit-buttonpanel");
-    $buttonPanel.prepend('<button class="submit">Submit</button>');
+    $buttonPanel.prepend('<button class="submit">' + getLocalizedString(this.lang, "SUBMIT") + '</button>');
     this.element.find(".submit").click(function () {
       var fb = this.grade();
       new CircuitExerciseFeedback(this.options, fb);
@@ -82,8 +102,8 @@
       this.element = $(this.options.element);
     }
     this.element.addClass("circuit-feedback");
-    this.element.html("<h2>Submission Feedback</h2><div class='circuit-input-output'></div>" +
-      "<div class='circuit'></div>");
+    this.element.html("<div class='circuit-input-output'></div>" +
+                    "<div class='circuit'></div>");
     this.initFeedback();
     this.initCircuit();
 
@@ -95,8 +115,9 @@
     var outputKey = this.exeropts.output;
     var fbHTML = "<table><thead><tr>";
     fbHTML += "<th>" + this.exeropts.input.join('</th><th>');
-    fbHTML += "</th><th>" + outputKey + ' from your circuit</th>';
-    fbHTML += "<th class='empty'></th><th>" + outputKey + " expected</th></tr></thead><tbody>";
+    fbHTML += "</th><th>" + outputKey + " " + getLocalizedString(this.lang, "YOUR_CIRCUIT") + '</th>';
+    fbHTML += "<th class='empty'></th><th>" + outputKey + " " +
+            getLocalizedString(this.lang, "EXPECTED") + "</th></tr></thead><tbody>";
 
     for (var i = 0; i < this.feedback.checks.length; i++) {
       var c = this.feedback.checks[i];
