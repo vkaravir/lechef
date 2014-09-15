@@ -25,7 +25,7 @@
       template: '<div class="circuit-buttonpanel" />' +
         '<div class="circuit" />',
       addSubmit: true}, options);
-    this.lang = this.options.language || "en";
+    this.lang = this.options.lang || "en";
     this.element = this.options.element;
     this.element.html(this.options.template);
     this.editor = new CircuitEditor($.extend({}, this.options, {element: this.element.find(".circuit"),
@@ -95,6 +95,7 @@
     this.options = $.extend({}, options);
     this.exeropts = exeropts;
     this.feedback = feedback;
+    this.lang = this.options.lang || exeropts.lang || "en";
     if (!this.options.element) {
       this.element = $("<div></div>");
       this.element.appendTo(document.body);
@@ -106,10 +107,6 @@
                     "<div class='circuit'></div>");
     this.initFeedback();
     this.initCircuit();
-
-    this.element.find("h2").click(function () {
-      this.element.remove();
-    }.bind(this));
   };
   CircuitExerciseFeedback.prototype.initFeedback = function () {
     var outputKey = this.exeropts.output;
