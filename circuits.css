@@ -22,6 +22,7 @@
   top: 40%;
   left: 25%;
   margin: 0;
+  color: rgb(0, 165, 235);
 }
 .circuit-output-component .circuit-label,
 .circuit-input-component .circuit-label {
@@ -66,7 +67,7 @@
   stroke-linejoin: round;
   stroke-linecap: round;
   fill: none;
-  stroke: black;
+  stroke: rgb(0, 165, 235);
 }
 
 .circuit-input-component,
@@ -127,7 +128,7 @@
   height: 20px;
   border-radius: 50%;
   position: absolute;
-  border: 2px solid #333;
+  border: 2px solid rgb(0, 165, 235);
   background-color: #fff;
   z-index: 100;
 }
