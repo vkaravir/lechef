@@ -282,7 +282,7 @@
                            " A" + 0.4*h + "," + 0.4*h + " 0 0 1 " +
                                   0.5*w + "," + 0.9*h +
                            " L" + 0.2*w + "," + 0.9*h + "Z");
-    this._snap.line(0.8*w-5, 0.5*h, w, 0.5*h);
+    this._snap.line(0.8*w-3, 0.5*h, w, 0.5*h);
 
     this._positionHandles(true);
   };
@@ -310,8 +310,8 @@
                           " A" + 0.4*h + " " + 0.4*h + " 0 0 1 " +
                           0.5*w + " " + 0.9*h +
                           " L" + 0.2*w + " " + 0.9*h + "Z");
-    this._snap.line(0.9*w-5, 0.5*h, w, 0.5*h);
-    this._snap.circle(0.8*w + 3, 0.5*h, 8);
+    this._snap.line(0.9*w-2, 0.5*h, w, 0.5*h);
+    this._snap.circle(0.8*w + 2, 0.5*h, 4);
 
     this._positionHandles(true);
   };
@@ -334,9 +334,9 @@
     var w = this.element.outerWidth(),
         h = this.element.outerHeight();
 
-    this._snap.circle(0.7*w + 7, 0.5*h, 8);
+    this._snap.circle(0.7*w + 5, 0.5*h, 4);
     this._snap.polygon([0.2*w, 0.1*h, 0.2*w, 0.9*h, 0.7*w, 0.5*h]);
-    this._snap.line(0.7*w + 16, 0.5*h, w, 0.5*h);
+    this._snap.line(0.7*w + 11, 0.5*h, w, 0.5*h);
 
     this._positionHandles(true);
   };
@@ -355,7 +355,7 @@
   CircuitOrComponent.prototype.drawComponent = function() {
     var w = this.element.outerWidth(),
         h = this.element.outerHeight();
-    this._snap.line(0.7*w + 16, 0.5*h, w, 0.5*h);
+    this._snap.line(0.7*w + 10, 0.5*h, w, 0.5*h);
     this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y)
                     " Q" + 0.6*w + " " + 0.15*h + " " + 0.8*w + " " + 0.5*h +
                     " Q" + 0.6*w + " " + 0.85*h + " " + 0.2*w + " " + 0.9*h +
@@ -364,8 +364,8 @@
     var i = this._inputCount,
         inputspacing = 0.8*h / (i + 1);
     for (; i--;) {
-      // magic number 5; should calculate the intersection of the bezier and the line
-      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
+      // magic number 3; should calculate the intersection of the bezier and the line
+      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 3, 0.1 * h + inputspacing * (i + 1));
     }
 
     this._positionHandles(false);
@@ -390,18 +390,18 @@
   CircuitNorComponent.prototype.drawComponent = function() {
     var w = this.element.outerWidth(),
         h = this.element.outerHeight();
-    this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
+    this._snap.line(0.75*w + 11, 0.5*h, w, 0.5*h);
     this._snap.path("M" + 0.2*w + " " + 0.1*h + // move to x y)
                     " Q" + 0.5*w + " " + 0.15*h + " " + 0.75*w + " " + 0.5*h +
                     " Q" + 0.5*w + " " + 0.85*h + " " + 0.2*w + " " + 0.9*h +
                     " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.1*h);
-    this._snap.circle(0.75*w + 8, 0.5*h, 8);
+    this._snap.circle(0.75*w + 5, 0.5*h, 4);
 
     var i = this._inputCount,
       inputspacing = 0.8*h / (i + 1);
     for (; i--;) {
-      // magic number 5; should calculate the intersection of the bezier and the line
-      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
+      // magic number 3; should calculate the intersection of the bezier and the line
+      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 3, 0.1 * h + inputspacing * (i + 1));
     }
 
     this._positionHandles(false);
@@ -425,7 +425,7 @@
   CircuitXorComponent.prototype.drawComponent = function() {
     var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-    this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
+    this._snap.line(0.75*w + 11, 0.5*h, w, 0.5*h);
     this._snap.path("M" + 0.25*w + " " + 0.1*h + // move to x y)
                     " Q" + 0.6*w + " " + 0.15*h + " " + 0.85*w + " " + 0.5*h +
                     " Q" + 0.6*w + " " + 0.85*h + " " + 0.25*w + " " + 0.9*h +
@@ -435,8 +435,8 @@
     var i = this._inputCount,
       inputspacing = 0.8*h / (i + 1);
     for (; i--;) {
-      // magic number 5; should calculate the intersection of the bezier and the line
-      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
+      // magic number 3; should calculate the intersection of the bezier and the line
+      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 3, 0.1 * h + inputspacing * (i + 1));
     }
 
     this._positionHandles(false);
@@ -459,19 +459,19 @@
   CircuitEqvComponent.prototype.drawComponent = function() {
     var w = this.element.outerWidth(),
       h = this.element.outerHeight();
-    this._snap.line(0.75*w + 16, 0.5*h, w, 0.5*h);
+    this._snap.line(0.75*w + 11, 0.5*h, w, 0.5*h);
     this._snap.path("M" + 0.25*w + " " + 0.1*h + // move to x y)
                     " Q" + 0.6*w + " " + 0.15*h + " " + 0.75*w + " " + 0.5*h +
                     " Q" + 0.6*w + " " + 0.85*h + " " + 0.25*w + " " + 0.9*h +
                     " Q" + 0.35*w + " " + 0.5*h + " " + 0.25*w + " " + 0.1*h);
     this._snap.path("M" + 0.2*w + " " + 0.1*h +
                     " Q" + 0.3*w + " " + 0.5*h + " " + 0.2*w + " " + 0.9*h);
-    this._snap.circle(0.75*w + 8, 0.5*h, 8);
+    this._snap.circle(0.75*w + 6, 0.5*h, 4);
     var i = this._inputCount,
       inputspacing = 0.8*h / (i + 1);
     for (; i--;) {
-      // magic number 5; should calculate the intersection of the bezier and the line
-      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 5, 0.1 * h + inputspacing * (i + 1));
+      // magic number 3; should calculate the intersection of the bezier and the line
+      this._snap.line(0, 0.1 * h + inputspacing * (i + 1), 0.2 * w + 3, 0.1 * h + inputspacing * (i + 1));
     }
 
     this._positionHandles(false);
@@ -494,7 +494,7 @@
   CircuitInputComponent.prototype.drawComponent = function() {
     var w = this.element.outerWidth(),
         h = this.element.outerHeight();
-    this._snap.line(0.6*w, 0.5*h, w, 0.5*h);
+    this._snap.line(0.6*w + 2, 0.5*h, w, 0.5*h);
     this._snap.rect(2, 0.2*h, 0.6*w, 0.6*h);
     this._positionHandles(false);
   };

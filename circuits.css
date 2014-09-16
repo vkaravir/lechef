@@ -9,8 +9,8 @@
   z-index: 10;
 }
 .circuit-component {
-  width: 150px;
-  height: 100px;
+  width: 90px;
+  height: 60px;
   position: absolute;
   top: 5%;
   left: 5%;
@@ -19,14 +19,14 @@
 }
 .circuit-component .circuit-label {
   position: absolute;
-  top: 40%;
-  left: 25%;
+  top: 35%;
+  left: 22%;
   margin: 0;
   color: rgb(0, 165, 235);
 }
 .circuit-output-component .circuit-label,
 .circuit-input-component .circuit-label {
-  font-size: 200%;
+  font-size: 130%;
   top: 28%;
 }
 .circuit-output-component .circuit-label {
@@ -35,25 +35,27 @@
 .circuit-input-component .circuit-label {
   left: 18%;
 }
+.circuit-nor .circuit-label {
+  left: 27%;
+}
+
+.circuit-or .circuit-label,
 .circuit-xor .circuit-label,
 .circuit-eqv .circuit-label{
-  left: 40%;
+  left: 30%;
 }
 .circuit-halfadder,
 .circuit-halfsubstractor {
-  width: 120px;
+  width: 80px;
 }
-/*.circuit-halfadder text {
-  font-size: 150%;
-  font-weight: bolder;
-}*/
 .circuit-halfadder .circuit-label {
-  font-size: 400%;
+  font-size: 200%;
   font-weight: bolder;
-  top: 15%;
+  top: 25%;
+  left: 30%;
 }
 .circuit-halfsubstractor .circuit-label {
-  font-size: 320%;
+  font-size: 200%;
   font-weight: bolder;
   top: 20%;
   left: 20%;
@@ -72,8 +74,8 @@
 
 .circuit-input-component,
 .circuit-output-component {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
 }
 
 .circuit-value-false:before,
@@ -124,8 +126,8 @@
   content: "0";
 }
 .circuit-input, .circuit-output {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   position: absolute;
   border: 2px solid rgb(0, 165, 235);
