@@ -38,7 +38,30 @@
 <script src="../libs/snap.svg.js"></script>
 <script src="../build/logic-circuit.js"></script>
 <script>
-  var editor = new CircuitEditor({element: $(".circuit-container"), buttonPanelElement: $(".buttonpanel")});
+  var init = function() {
+    $(".circuit-container").html("");
+    var editor = new CircuitEditor({element: $(".circuit-container"), buttonPanelElement: $(".buttonpanel")});
+    $(".buttonpanel").append("<button id='input'>Input</button>" +
+                        "<button id='output'>Output</button>" +
+                        "<button id='reset'>Reset</button>");
+    $("#reset").click(init);
+    $("#input").click(function() {
+      var inputName = window.prompt("Name of new input:");
+      if (inputName) {
+        var comp = editor.circuit.inputComponent(inputName);
+        editor.setInteractive(comp);
+      }
+    });
+    $("#output").click(function() {
+      var outputName = window.prompt("Name of new output:");
+      if (outputName) {
+        var comp = editor.circuit.outputComponent(outputName);
+        editor.setInteractive(comp);
+      }
+    });
+  };
+  init();
+
 </script>
 </body>
 </html>
