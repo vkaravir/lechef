@@ -54,7 +54,7 @@
     for (var i = 0; i < input.length; i++) {
       var inp = this.editor.circuit.inputComponent(input[i]);
       this.editor.setInteractive(inp);
-      inp.element.css({top: Math.round(0.2 * h + inputSpacing * i),
+      inp.element.css({top: i*70 + 10,
         left: Math.round(0.1 * w) });
     }
   };
@@ -66,8 +66,8 @@
     for (var i = 0; i < output.length; i++) {
       var out = this.editor.circuit.outputComponent(output[i]);
       this.editor.setInteractive(out);
-      out.element.css({top: Math.round(0.2 * h + outputSpacing * i),
-        left: Math.round(0.9 * w) });
+      out.element.css({top: i*70 + 10,
+        left: Math.min(600, Math.round(0.9 * w)) });
     }
   };
   exerproto.grade = function () {
