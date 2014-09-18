@@ -103,6 +103,9 @@
   padding: 5px;
   top: -20px;
 }
+.circuit-value-interactive.circuit-input[data-pos="1"]:before {
+  top: 0;
+}
 .circuit-value-incorrect:before {
   border-color: red;
   color: white;
