@@ -12,7 +12,7 @@ module.exports = function(grunt) {
           compress: false
         },
         files: {
-          "build/logic-circuit.min.js": ["src/js/circuits.js",
+          "build/lechef.min.js": ["src/js/circuits.js",
             "src/js/circuit-editor.js",
             "src/js/circuit-exercise.js"]
         }
@@ -23,11 +23,17 @@ module.exports = function(grunt) {
         src: ["src/js/circuits.js",
           "src/js/circuit-editor.js",
           "src/js/circuit-exercise.js"],
-        dest: 'build/logic-circuit.js'
+        dest: 'build/lechef.js'
+      }
+    },
+    copy: {
+      css: {
+        src: ["src/css/circuits.css"],
+        dest: 'build/lechef.css'
       }
     }
   });
 
 
-  grunt.registerTask("default", ["concat", "uglify"]);
+  grunt.registerTask("default", ["concat", "uglify", "copy"]);
 };
