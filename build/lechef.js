@@ -1062,6 +1062,12 @@
       circuit.element.trigger("circuit-changed");
     });
   };
+  CircuitSimulationExercise.prototype.reset = function() {
+    this.circuit.element.find(".circuit-value-interactive.circuit-value-true, .circuit-value-interactive.circuit-value-false")
+                      .removeClass("circuit-value-true circuit-value-false")
+                      .addClass("circuit-value-unknown");
+  };
+
   CircuitSimulationExercise.prototype.grade = function () {
     var outputValue = function (comp) {
         if (comp.element.find(".circuit-output." + CIRCUIT_CONSTANTS.VALCLASS[true]).size() > 0) {
