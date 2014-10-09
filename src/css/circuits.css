@@ -193,3 +193,7 @@
 .circuit-feedback tr.circuit-active:before {
   border-left-color: gray;
 }
+
+.circuit-buttonpanel {
+  text-align: center;
+}
