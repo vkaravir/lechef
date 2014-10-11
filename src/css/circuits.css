@@ -1,14 +1,14 @@
-.circuit, .circuit svg {
+.lechef-circuit, .lechef-circuit svg {
   width: 100%;
   height: 100%;
 }
-.circuit {
+.lechef-circuit {
   position: relative;
 }
-.circuit svg, .circuit svg * {
+.lechef-circuit svg, .lechef-circuit svg * {
   z-index: 10;
 }
-.circuit-component {
+.lechef-component {
   width: 90px;
   height: 60px;
   position: absolute;
@@ -17,54 +17,54 @@
   cursor: move;
   z-index: 0;
 }
-.circuit-component .circuit-label {
+.lechef-component .lechef-label {
   position: absolute;
   top: 35%;
   left: 22%;
   margin: 0;
   color: rgb(0, 165, 235);
 }
-.circuit-output-component .circuit-label,
-.circuit-input-component .circuit-label {
+.lechef-output-component .lechef-label,
+.lechef-input-component .lechef-label {
   font-size: 130%;
   top: 28%;
 }
-.circuit-output-component .circuit-label {
+.lechef-output-component .lechef-label {
   left: 48%;
 }
-.circuit-input-component .circuit-label {
+.lechef-input-component .lechef-label {
   left: 18%;
 }
-.circuit-nor .circuit-label {
+.lechef-nor .lechef-label {
   left: 27%;
 }
 
-.circuit-or .circuit-label,
-.circuit-xor .circuit-label,
-.circuit-eqv .circuit-label{
+.lechef-or .lechef-label,
+.lechef-xor .lechef-label,
+.lechef-eqv .lechef-label{
   left: 30%;
 }
-.circuit-halfadder,
-.circuit-halfsubstractor {
+.lechef-halfadder,
+.lechef-halfsubstractor {
   width: 80px;
 }
-.circuit-halfadder .circuit-label {
+.lechef-halfadder .lechef-label {
   font-size: 200%;
   font-weight: bolder;
   top: 25%;
   left: 30%;
 }
-.circuit-halfsubstractor .circuit-label {
+.lechef-halfsubstractor .lechef-label {
   font-size: 200%;
   font-weight: bolder;
   top: 20%;
   left: 20%;
 }
-.circuit-component path,
-.circuit-component rect,
-.circuit-component circle,
-.circuit-component polygon,
-.circuit-component line {
+.lechef-component path,
+.lechef-component rect,
+.lechef-component circle,
+.lechef-component polygon,
+.lechef-component line {
   stroke-width: 3;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -72,63 +72,63 @@
   stroke: rgb(0, 165, 235);
 }
 
-.circuit-input-component,
-.circuit-output-component {
+.lechef-input-component,
+.lechef-output-component {
   width: 50px;
   height: 50px;
 }
 
-.circuit-value-false:before,
-.circuit-value-true:before,
-.circuit-value-false:before,
-.circuit-value-true:before,
-.circuit-value-unknown:before {
+.lechef-value-false:before,
+.lechef-value-true:before,
+.lechef-value-false:before,
+.lechef-value-true:before,
+.lechef-value-unknown:before {
   display: block;
   position: absolute;
   top: -15px;
   font-size: 1.2em;
 }
-.circuit-output.circuit-value-false:before,
-.circuit-output.circuit-value-true:before,
-.circuit-output.circuit-value-unknown:before {
+.lechef-output.lechef-value-false:before,
+.lechef-output.lechef-value-true:before,
+.lechef-output.lechef-value-unknown:before {
   right: -15px;
 }
-.circuit-input.circuit-value-false:before,
-.circuit-input.circuit-value-true:before,
-.circuit-input.circuit-value-unknown:before {
+.lechef-input.lechef-value-false:before,
+.lechef-input.lechef-value-true:before,
+.lechef-input.lechef-value-unknown:before {
   left: -15px;
 }
-.circuit-value-interactive:before {
+.lechef-value-interactive:before {
   border: 2px dashed #ccc;
   padding: 5px;
   top: -20px;
 }
-.circuit-value-interactive.circuit-input[data-pos="1"]:before {
+.lechef-value-interactive.lechef-input[data-pos="1"]:before {
   top: 0;
 }
-.circuit-value-incorrect:before {
+.lechef-value-incorrect:before {
   border-color: red;
   color: white;
   background-color: rgba(255, 120, 120, 0.5);
 }
-.circuit-value-correct:before {
+.lechef-value-correct:before {
   border-color: green;
   color: white;
   background-color: rgba(120, 255, 120, 0.5);
 }
-.circuit-value-unknown:before {
+.lechef-value-unknown:before {
   content: "??";
   color: red;
   padding: 3px;
   border-color: red;
 }
-.circuit-value-true:before {
+.lechef-value-true:before {
   content: "1";
 }
-.circuit-value-false:before {
+.lechef-value-false:before {
   content: "0";
 }
-.circuit-input, .circuit-output {
+.lechef-input, .lechef-output {
   width: 15px;
   height: 15px;
   border-radius: 50%;
@@ -137,46 +137,46 @@
   background-color: #fff;
   z-index: 100;
 }
-.circuit-output {
+.lechef-output {
   right: -10px;
 }
-.circuit-output:hover {
+.lechef-output:hover {
   cursor: hand;
 }
-.circuit-input {
+.lechef-input {
   left: -10px;
   z-index: 200 !important;
 }
-.circuit-input.over {
+.lechef-input.over {
   z-index: 200 !important;
 }
-.circuit-output:hover, .circuit-input.over {
+.lechef-output:hover, .lechef-input.over {
   box-shadow: 0 0 10px green;
 }
-.circuit-input.circuit-missing {
+.lechef-input.lechef-missing {
   border-color: red;
   box-shadow: 0 0 10px red;
 }
-.circuit-output.ui-draggable-dragging {
+.lechef-output.ui-draggable-dragging {
   border: none;
   background-color: transparent;
   z-index: 0 !important;
 }
-.circuit-connector {
+.lechef-connector {
   stroke-width: 5px;
   stroke: #aaf;
   fill: none;
 }
-.circuit-unconnected {
+.lechef-unconnected {
   stroke: #faa;
 }
-.circuit-input-output table {
+.lechef-input-output table {
   margin-left: 20px;
 }
-.circuit-input-output tr {
+.lechef-input-output tr {
   position: relative;
 }
-.circuit-input-output tr:before {
+.lechef-input-output tr:before {
   position: absolute;
   content: "";
   width: 0;
@@ -184,16 +184,15 @@
   left: 10px;
   border: 10px solid transparent;
 }
-.circuit-feedback tr.circuit-correct {
+.lechef-feedback tr.lechef-correct {
   background-color: greenyellow;
 }
-.circuit-feedback tr.circuit-incorrect {
+.lechef-feedback tr.lechef-incorrect {
   background-color: rgb(255, 150, 150);
 }
-.circuit-feedback tr.circuit-active:before {
+.lechef-feedback tr.lechef-active:before {
   border-left-color: gray;
 }
-
-.circuit-buttonpanel {
+.lechef-buttonpanel {
   text-align: center;
 }

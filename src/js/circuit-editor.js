@@ -18,7 +18,7 @@
         (this.options.useImages ? '<img src="images/' + c + '.svg" />' : c.toUpperCase()) +
         '</button>';
     }
-    var $buttonPanel = this.options.buttonPanelElement || this.element.find(".circuit-buttonpanel");
+    var $buttonPanel = this.options.buttonPanelElement || this.element.find(".lechef-buttonpanel");
     $buttonPanel.html(html);
     this.buttonPanel = $buttonPanel;
   };
@@ -26,54 +26,54 @@
     var $buttonPanel = this.buttonPanel;
     $(".addnot", $buttonPanel).click(function () {
       var comp = this.circuit.notComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addand", $buttonPanel).click(function () {
       var comp = this.circuit.andComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addnand", $buttonPanel).click(function () {
       var comp = this.circuit.nandComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addor", $buttonPanel).click(function () {
       var comp = this.circuit.orComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addnor", $buttonPanel).click(function () {
       var comp = this.circuit.norComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addxor", $buttonPanel).click(function () {
       var comp = this.circuit.xorComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addeqv", $buttonPanel).click(function () {
       var comp = this.circuit.eqvComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addha", $buttonPanel).click(function () {
       var comp = this.circuit.halfAdderComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addhs", $buttonPanel).click(function () {
       var comp = this.circuit.halfSubstractorComponent();
-      this.element.trigger("circuit-changed");
+      this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
   };
   editorproto.setInteractive = function (comp) {
     var x, y,
       editor = this;
-    comp.element.find('.circuit-output').draggable({
+    comp.element.find('.lechef-output').draggable({
       revert: true,
       helper: "clone",
       start: function (evt, ui) {
@@ -83,7 +83,7 @@
         x = pos.left + helperPos.left + helper.outerWidth();
         y = pos.top + helperPos.top + helper.outerHeight() / 2.0;
         editor.path = editor.circuit._snap.path("M" + x + " " + y + " Q" + x + " " + y + " " + x + " " + y);
-        editor.path.addClass("circuit-connector circuit-unconnected");
+        editor.path.addClass("lechef-connector lechef-unconnected");
         editor.circuit.clearFeedback();
       },
       drag: function (evt, ui) {
@@ -104,25 +104,25 @@
         editor.path.remove();
         editor.path = null;
         editor.selected = null;
-        editor.element.trigger("circuit-changed");
+        editor.element.trigger("lechef-circuit-changed");
       }.bind(this)});
-    comp.element.find(".circuit-input").droppable({
-      accept: ".circuit-output",
+    comp.element.find(".lechef-input").droppable({
+      accept: ".lechef-output",
       drop: function (evt, ui) {
         if (editor.path) {
           editor.pos = $(this).data("pos");
           editor.selected = comp;
-          editor.element.trigger("circuit-changed");
+          editor.element.trigger("lechef-circuit-changed");
         }
       },
       over: function (evt, ui) {
         if (editor.path) {
-          editor.path.removeClass("circuit-unconnected");
+          editor.path.removeClass("lechef-unconnected");
         }
       },
       out: function (evt, ui) {
         if (editor.path) {
-          editor.path.addClass("circuit-unconnected");
+          editor.path.addClass("lechef-unconnected");
         }
       }
     });

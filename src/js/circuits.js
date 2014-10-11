@@ -15,12 +15,12 @@
   };
 
   window.CIRCUIT_CONSTANTS = {
-    VALCLASS: {true: "circuit-value-true",
-              false: "circuit-value-false",
-              UNKNOWN: "circuit-value-unknown",
-              null: "circuit-value-unknown"},
-    FEEDBACKCLASS: { true: "circuit-value-correct",
-                    false: "circuit-value-incorrect"}
+    VALCLASS: {true: "lechef-value-true",
+              false: "lechef-value-false",
+              UNKNOWN: "lechef-value-unknown",
+              null: "lechef-value-unknown"},
+    FEEDBACKCLASS: { true: "lechef-value-correct",
+                    false: "lechef-value-incorrect"}
   };
 
   var CircuitConnection = function(outOf, outOfPos, into, intoPos) {
@@ -29,7 +29,7 @@
     this._into = into;
     this._intoPos = intoPos;
     var path = outOf.circuit._snap.path("M0 0 L 100 100");
-    path.addClass("circuit-connector");
+    path.addClass("lechef-connector");
     this._path = path;
     this.positionPath();
   };
@@ -85,10 +85,10 @@
     this.options = $.extend({draggable: true, clearFeedbackOnDrag: false, inputCount: 2, outputCount: 1}, options);
     var svgId = "LCC" + new Date().getTime();
     var element = $("<div><svg id='" + svgId +
-                    "'></svg><span class='circuit-label'>" + this._componentName.toUpperCase() +
+                    "'></svg><span class='lechef-label'>" + this._componentName.toUpperCase() +
                                             "</span></div>");
-    element.addClass("circuit-component");
-    element.addClass("circuit-" + this._componentName);
+    element.addClass("lechef-component");
+    element.addClass("lechef-" + this._componentName);
     if (options && options.classNames) { element.addClass(options.classNames); }
     this.element = element;
     if (!this.options.element) {
@@ -105,7 +105,7 @@
     this._outputCount = this.options.outputCount;
     for (var i = 0; i < this._outputCount; i++) {
       var output = $("<div />");
-      output.addClass("circuit-output");
+      output.addClass("lechef-output");
       output.attr("data-pos", i);
       this.element.append(output);
       this._outputElements[i] = output;
@@ -115,7 +115,7 @@
     this._inputCount = this.options.inputCount;
     for (i = 0; i < this._inputCount; i++ ) {
       var input = $("<div />");
-      input.addClass("circuit-input");
+      input.addClass("lechef-input");
       input.attr("data-pos", i);
       this._inputElements[i] = input;
       this.element.append(input);
@@ -240,7 +240,7 @@
     for (var i = this._inputCount; i--; ) {
       var input = this._inputs[i];
       if (!input) {
-        this._inputElements[i].addClass("circuit-missing");
+        this._inputElements[i].addClass("lechef-missing");
         valid = false;
       } else {
         valid = input.validateInputs() && valid;
@@ -264,7 +264,7 @@
         this.layout();
       }.bind(this),
       stop: function() {
-        this.circuit.element.trigger("circuit-changed");
+        this.circuit.element.trigger("lechef-circuit-changed");
       }.bind(this)
     });
   };
@@ -487,7 +487,7 @@
   // component for input for the circuit
   var CircuitInputComponent = function(circuit, options) {
     this._componentName = options.componentName || "INPUT";
-    options.classNames = (options.classNames || "") + " circuit-input-component";
+    options.classNames = (options.classNames || "") + " lechef-input-component";
     this.init(circuit, options);
   };
   Utils.extend(CircuitInputComponent, CircuitComponent);
@@ -511,7 +511,7 @@
   // component for output of the circuit
   var CircuitOutputComponent = function(circuit, options) {
     this._componentName = options.componentName || "OUTPUT";
-    options.classNames = (options.classNames || "") + " circuit-output-component";
+    options.classNames = (options.classNames || "") + " lechef-output-component";
     this.init(circuit, options);
   };
   Utils.extend(CircuitOutputComponent, CircuitComponent);
@@ -539,7 +539,7 @@
     var opts = $.extend({outputCount: 2}, options);
     this._componentName = "halfadder";
     this.init(circuit, opts);
-    this.element.find(".circuit-label").html("&frac12;");
+    this.element.find(".lechef-label").html("&frac12;");
   };
   Utils.extend(CircuitHalfAdderComponent, CircuitComponent);
   CircuitHalfAdderComponent.prototype.drawComponent = function() {
@@ -574,7 +574,7 @@
     var opts = $.extend({outputCount: 2}, options);
     this._componentName = "halfsubstractor";
     this.init(circuit, opts);
-    this.element.find(".circuit-label").html("-&frac12;")
+    this.element.find(".lechef-label").html("-&frac12;")
   };
   Utils.extend(CircuitHalfSubstractorComponent, CircuitHalfAdderComponent);
   CircuitHalfSubstractorComponent.prototype.simulateOutput = function(input) {
@@ -597,7 +597,7 @@
     var svgId = "LC" + new Date().getTime();
     this.element.append("<svg id='" + svgId + "'></svg>");
     this._snap = new Snap("#" + svgId);
-    this.element.addClass("circuit");
+    this.element.addClass("lechef-circuit");
     this._components = [];
   };
   LogicCircuit.COMPONENT_TYPES = {
@@ -689,7 +689,7 @@
     return result;
   };
   logicproto.clearFeedback = function() {
-    var fbClasses = ["circuit-missing", CIRCUIT_CONSTANTS.VALCLASS[false], CIRCUIT_CONSTANTS.VALCLASS[true]];
+    var fbClasses = ["lechef-missing", CIRCUIT_CONSTANTS.VALCLASS[false], CIRCUIT_CONSTANTS.VALCLASS[true]];
     this.element.find("." + fbClasses.join(",.")).removeClass(fbClasses.join(' '));
   };
   logicproto.state = function(newState) {

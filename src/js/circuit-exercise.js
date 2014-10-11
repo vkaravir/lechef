@@ -22,14 +22,14 @@
   };
   var CircuitExercise = function (options) {
     this.options = $.extend({components: ["and", "not", "or"],
-      template: '<div class="circuit-buttonpanel" />' +
-        '<div class="circuit" />',
+      template: '<div class="lechef-buttonpanel" />' +
+        '<div class="lechef-circuit" />',
       addSubmit: true}, options);
     this.lang = this.options.lang || "en";
     this.element = this.options.element;
     this.element.html(this.options.template);
-    this.editor = new CircuitEditor($.extend({}, this.options, {element: this.element.find(".circuit"),
-      buttonPanelElement: this.element.find(".circuit-buttonpanel")}));
+    this.editor = new CircuitEditor($.extend({}, this.options, {element: this.element.find(".lechef-circuit"),
+      buttonPanelElement: this.element.find(".lechef-buttonpanel")}));
     if (this.options.addSubmit) {
       this.addSubmitToToolbar();
     }
@@ -39,7 +39,7 @@
   };
   var exerproto = CircuitExercise.prototype;
   exerproto.addSubmitToToolbar = function () {
-    var $buttonPanel = this.options.buttonPanelElement || this.element.find(".circuit-buttonpanel");
+    var $buttonPanel = this.options.buttonPanelElement || this.element.find(".lechef-buttonpanel");
     $buttonPanel.prepend('<button class="submit">' + getLocalizedString(this.lang, "SUBMIT") + '</button>');
     this.element.find(".submit").click(function () {
       var fb = this.grade();
@@ -102,9 +102,9 @@
     } else {
       this.element = $(this.options.element);
     }
-    this.element.addClass("circuit-feedback");
-    this.element.html("<div class='circuit-input-output'></div>" +
-                    "<div class='circuit'></div>");
+    this.element.addClass("lechef-feedback");
+    this.element.html("<div class='lechef-input-output'></div>" +
+                    "<div class='lechef-circuit'></div>");
     this.initFeedback();
     this.initCircuit();
   };
@@ -119,7 +119,7 @@
     for (var i = 0; i < this.feedback.checks.length; i++) {
       var c = this.feedback.checks[i];
       fbHTML += "<tr data-check='" + i + "'";
-      fbHTML += " class='" + (c.correct ? "circuit-correct" : "circuit-incorrect") + "'>";
+      fbHTML += " class='" + (c.correct ? "lechef-correct" : "lechef-incorrect") + "'>";
       for (var j = 0; j < this.exeropts.input.length; j++) {
         fbHTML += "<td>" + (c.input[this.exeropts.input[j]]?"1":"0") + "</td>";
       }
@@ -131,23 +131,23 @@
       }
       fbHTML += "<td>" + outVal + "</td>";
       fbHTML += "<td class='empty'></td>";
-      fbHTML += "<td>" + (JSON.stringify(c.expected)?"1":"0") + "</td>";
+      fbHTML += "<td>" + (c.expected?"1":"0") + "</td>";
       fbHTML += "</tr>";
     }
     fbHTML += "</tbody></table>";
 
     var self = this;
-    this.element.find('.circuit-input-output').html(fbHTML)
+    this.element.find('.lechef-input-output').html(fbHTML)
       .find("tbody tr").click(function () {
         self.circuit.clearFeedback();
         self.circuit.simulateOutput(self.feedback.checks[$(this).data("check")].input);
-        $(this).parent().find(".circuit-active").removeClass("circuit-active");
-        $(this).addClass("circuit-active");
+        $(this).parent().find(".lechef-active").removeClass("lechef-active");
+        $(this).addClass("lechef-active");
       });
 
   };
   CircuitExerciseFeedback.prototype.initCircuit = function () {
-    this.circuit = new LogicCircuit({element: this.element.find(".circuit")});
+    this.circuit = new LogicCircuit({element: this.element.find(".lechef-circuit")});
     this.circuit.state(this.feedback.circuit);
   };
 
@@ -163,15 +163,15 @@
     var inputComponents = this.circuit._inputs;
     for (var key in inputComponents) {
       if (inputComponents.hasOwnProperty(key)) {
-        inputComponents[key].element.find(".circuit-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[inputValues[key]]);
+        inputComponents[key].element.find(".lechef-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[inputValues[key]]);
       }
     }
   };
   CircuitSimulationExercise.prototype.initToggles = function () {
-    var toggles = this.circuit.element.find(".circuit-output, .circuit-input")
-      .not(".circuit-value-true, .circuit-value-false")
+    var toggles = this.circuit.element.find(".lechef-output, .lechef-input")
+      .not(".lechef-value-true, .lechef-value-false")
       .addClass(CIRCUIT_CONSTANTS.VALCLASS.UNKNOWN)
-      .addClass("circuit-value-interactive");
+      .addClass("lechef-value-interactive");
     var circuit = this.circuit;
     toggles.click(function (evt) {
       evt.stopPropagation();
@@ -184,30 +184,30 @@
         $this.toggleClass(CIRCUIT_CONSTANTS.VALCLASS[false])
           .toggleClass(CIRCUIT_CONSTANTS.VALCLASS[true]);
       }
-      circuit.element.trigger("circuit-changed");
+      circuit.element.trigger("lechef-circuit-changed");
     });
   };
   CircuitSimulationExercise.prototype.reset = function() {
-    this.circuit.element.find(".circuit-value-interactive.circuit-value-true, .circuit-value-interactive.circuit-value-false")
-                      .removeClass("circuit-value-true circuit-value-false")
-                      .addClass("circuit-value-unknown");
+    this.circuit.element.find(".lechef-value-interactive.lechef-value-true, .lechef-value-interactive.lechef-value-false")
+                      .removeClass("lechef-value-true lechef-value-false")
+                      .addClass("lechef-value-unknown");
   };
 
   CircuitSimulationExercise.prototype.grade = function () {
     var outputValue = function (comp) {
-        if (comp.element.find(".circuit-output." + CIRCUIT_CONSTANTS.VALCLASS[true]).size() > 0) {
+        if (comp.element.find(".lechef-output." + CIRCUIT_CONSTANTS.VALCLASS[true]).size() > 0) {
           return true;
-        } else if (comp.element.find(".circuit-output." + CIRCUIT_CONSTANTS.VALCLASS[false]).size() > 0) {
+        } else if (comp.element.find(".lechef-output." + CIRCUIT_CONSTANTS.VALCLASS[false]).size() > 0) {
           return false;
         } else {
           return null;
         }
       },
       inputValue = function (comp, pos) {
-        if (comp.element.find(".circuit-input." + CIRCUIT_CONSTANTS.VALCLASS[true] +
+        if (comp.element.find(".lechef-input." + CIRCUIT_CONSTANTS.VALCLASS[true] +
           "[data-pos=" + pos + "]").size() > 0) {
           return true;
-        } else if (comp.element.find(".circuit-input." + CIRCUIT_CONSTANTS.VALCLASS[false] +
+        } else if (comp.element.find(".lechef-input." + CIRCUIT_CONSTANTS.VALCLASS[false] +
           "[data-pos=" + pos + "]").size() > 0) {
           return false;
         } else {
@@ -232,14 +232,14 @@
         states.push(state);
         if (!(sc instanceof LogicCircuit.COMPONENT_TYPES.CircuitOutputComponent)) {
           val = outputValue(sc);
-          corr = val === outputValue(mc);
+          corr = (val === outputValue(mc));
           success = success && corr;
           fb.output = corr;
           state.output = val;
         }
         for (var j = 0; j < sc._inputCount; j++) {
           val = inputValue(sc, j);
-          corr = val === inputValue(mc, j);
+          corr = (val === inputValue(mc, j));
           success = success && corr;
           fb.input.push(corr);
           state.input.push(val);
@@ -263,8 +263,8 @@
     } else {
       this.element = $(this.options.element);
     }
-    this.element.addClass("circuit-feedback");
-    this.element.html("<div class='circuit'></div>");
+    this.element.addClass("lechef-feedback");
+    this.element.html("<div class='lechef-circuit'></div>");
     this.initCircuit();
     this.initFeedback();
 
@@ -279,16 +279,16 @@
       states = this.feedback.states,
       c, state, fb;
     var outputFeedback = function (comp, compFb, compState) {
-      var e = comp.element.find(".circuit-output");
+      var e = comp.element.find(".lechef-output");
       e.addClass(CIRCUIT_CONSTANTS.VALCLASS[compState.output])
         .addClass(CIRCUIT_CONSTANTS.FEEDBACKCLASS[compFb.output])
-        .addClass("circuit-value-interactive");
+        .addClass("lechef-value-interactive");
     };
     var inputFeedback = function (comp, pos, compFb, compState) {
       var e = comp._inputElements[pos];
       e.addClass(CIRCUIT_CONSTANTS.VALCLASS[compState.input[pos]])
         .addClass(CIRCUIT_CONSTANTS.FEEDBACKCLASS[compFb.input[pos]])
-        .addClass("circuit-value-interactive");
+        .addClass("lechef-value-interactive");
     };
     for (var i = 0, l = comps.length; i < l; i++) {
       c = comps[i];
