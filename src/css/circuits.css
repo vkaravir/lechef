@@ -164,11 +164,11 @@
 }
 .lechef-connector {
   stroke-width: 5px;
-  stroke: #aaf;
+  stroke: rgb(0, 165, 235);
   fill: none;
 }
 .lechef-unconnected {
-  stroke: #faa;
+  stroke: rgb(225, 100, 100);
 }
 .lechef-input-output table {
   margin-left: 20px;
