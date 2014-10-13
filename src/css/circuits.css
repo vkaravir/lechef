@@ -167,6 +167,9 @@
   stroke: rgb(0, 165, 235);
   fill: none;
 }
+.lechef-connector.lechef-value-false {
+  stroke: rgb(120, 120, 120);
+}
 .lechef-unconnected {
   stroke: rgb(225, 100, 100);
 }
