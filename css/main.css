@@ -1,0 +1,35 @@
+.lechef-circuit {
+  margin: 0 auto;
+}
+#first-example {
+  height: 180px;
+  width: 500px;
+}
+#design-example .lechef-circuit {
+  height: 200px;
+  width: 700px;
+}
+.lechef-exercise {
+  padding: 10px;
+  border: 1px dashed green;
+  border-radius: 6px;
+  background: #fff;
+}
+.lechef-exercise .container {
+  width: 100%;
+}
+.lechef-exercise .sortable-code {
+  margin-left: 0;
+  padding-left: 15px;
+}
+
+.site-footer {
+  border-top: 1px solid black;
+  padding-top: 1em;
+  margin-top: 1em;
+}
+
+code {
+  color: rgb(0, 165, 235);
+  background: #f2f4f9;
+}
