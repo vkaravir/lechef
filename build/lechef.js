@@ -50,6 +50,12 @@
                       " " + ctrl2X + " " + endY + // cubic bezier, second control point
                       " " + endX + " " + endY);
   };
+  CircuitConnection.prototype.setValue = function(value) {
+    this._path.addClass(CIRCUIT_CONSTANTS.VALCLASS[value]);
+  };
+  CircuitConnection.prototype.clearValue = function() {
+    this._path.removeClass([CIRCUIT_CONSTANTS.VALCLASS[true], CIRCUIT_CONSTANTS.VALCLASS[false]].join(" "));
+  };
   CircuitConnection.prototype.destroy = function() {
     this._path.remove();
   };
@@ -248,6 +254,16 @@
     }
     return valid;
   };
+  compproto._setPathValues = function() {
+    var val, i, j, paths;
+    for (i = this._outputpaths.length; i--; ) {
+      val = arguments[i];
+      paths = this._outputpaths[i];
+      for (j = paths.length; j--; ) {
+        paths[j].setValue(val);
+      }
+    }
+  };
   compproto.state = function() {
     return $.extend({name: this._componentName},
                     this.options,
@@ -294,6 +310,7 @@
       result = result && res;
     }
     this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+    this._setPathValues(result);
     return result;
   };
 
@@ -321,6 +338,7 @@
     this._outputElements[0]
                 .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
                 .addClass(CIRCUIT_CONSTANTS.VALCLASS[out]);
+    this._setPathValues(out);
     return out;
   };
 
@@ -344,6 +362,7 @@
     var inp = this._inputs[0].simulateOutput(input);
     this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
     this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[!inp]);
+    this._setPathValues(!inp);
     return !inp;
   };
 
@@ -379,6 +398,7 @@
       result = result || inp;
     }
     this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+    this._setPathValues(result);
     return result;
   };
 
@@ -413,6 +433,7 @@
     this._outputElements[0]
           .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
           .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+    this._setPathValues(result);
     return result;
   };
 
@@ -448,6 +469,7 @@
     this._inputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[in2]);
     var out = ( in1 && !in2 ) || ( !in1 && in2 );
     this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[out]);
+    this._setPathValues(out);
     return out;
   };
 
@@ -482,6 +504,7 @@
     this._outputElements[0]
           .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
           .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
+    this._setPathValues(result);
     return result;
   };
   // component for input for the circuit
@@ -501,6 +524,7 @@
   CircuitInputComponent.prototype.simulateOutput = function(input) {
     var inp = input[this._componentName];
     this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
+    this._setPathValues(inp);
     return inp;
   };
   CircuitInputComponent.prototype.state = function() {
@@ -567,6 +591,7 @@
         res1 = inp0 && inp1;
     this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
     this._outputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
+    this._setPathValues(res0, res1);
     return [res0, res1];
   };
 
@@ -586,6 +611,7 @@
         res1 = !inp0 && inp1;
     this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
     this._outputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
+    this._setPathValues(res0, res1);
     return [res0, res1];
   };
 
@@ -691,6 +717,14 @@
   logicproto.clearFeedback = function() {
     var fbClasses = ["lechef-missing", CIRCUIT_CONSTANTS.VALCLASS[false], CIRCUIT_CONSTANTS.VALCLASS[true]];
     this.element.find("." + fbClasses.join(",.")).removeClass(fbClasses.join(' '));
+    // the above won't work for the SVG elements, so we'll go through the objects
+    for (var i = this._components.length; i--; ) {
+      var c = this._components[i];
+      for (var j = c._outputpaths.length; j--; ) {
+        for (var k = c._outputpaths[j].length; k--; )
+        c._outputpaths[j][k].clearValue();
+      }
+    }
   };
   logicproto.state = function(newState) {
     var state, c, i, j, newC;
