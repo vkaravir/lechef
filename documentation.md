@@ -7,6 +7,7 @@ permalink: /documentation/
 
 ## Getting started
 
+TODO:
  * download
  * libraries required
  * basic HTML structure
@@ -71,7 +72,8 @@ Let's go through the options, one by one.
  * ```addSubmit``` - Whether or not to add a Submit button to the toolbar. Defaults to ```true```.
  * ```grading``` - An array of input - output values that the constructed circuit should match. Essentially, this is
  the truth table of the circuit. Each item in the array should have properties ```input``` and ```output```. The ```input``` property should be an object with properties for each of the input names and values for the values of the inputs. The ```output``` property should be the expected output value with the inputs. The values should all be booleans, so either ```true``` or ```false```.
-
+ * ```lang``` - The language used, as an ISO language code. Defaults to ```en``` for English. The other supported language is Finnish (```fi```). Can you tell I'm Finnish :) 
+ 
 ## Circuit Simulation exercise
 
 In the circuit simulation exercise, the learner is given a logic circuit and the input values are fixed and given. The exercise requires the learner to set the values of all the inputs and outputs of the components in the circuit to the correct values. This is done by toggling the values with mouse clicks. 
@@ -132,9 +134,8 @@ And here's the resulting exercise:
 
 TODO: the options of the ```CircuitSimulationExercise``` constructor.
 
- * ```input``` - 
- * `````` - 
- * `````` - 
+ * ```input``` - The values for the input components which the learner should simulate the circuit with. This should be an object with properties matching the labels of the input components and the values booleans.
+ * ```lang``` - The language used, as an ISO language code. Defaults to ```en``` for English. The other supported language is Finnish (```fi```).
 
 ### The API
 At the heart of the API is the ```LogicCircuit``` type. It has functions to add the supported components to the circuit, such as ```.andComponent``` for adding an AND gate. The objects returned by these functions are then connected with their ```.inputComponent``` function. All the functions crucial for specifying the circuit for a circuit simulation exercise are briefly described below.  
@@ -144,19 +145,26 @@ Initializes a new lechef logic circuit. The only options supported :
 
  * ```element``` - The DOM element where the logic circuit should be added.
 
-#### ```logicCircuit.inputComponent(label, options)```
-#### ```logicCircuit.outputComponent(label, options)```
-#### ```logicCircuit.andComponent(options)```
-#### ```logicCircuit.nandComponent(options)```
-#### ```logicCircuit.orComponent(options)```
-#### ```logicCircuit.norComponent(options)```
-#### ```logicCircuit.xorComponent(options)```
-#### ```logicCircuit.eqvComponent(options)```
-#### ```logicCircuit.notComponent(options)```
+#### ```logicCircuit.inputComponent(label)```
+#### ```logicCircuit.outputComponent(label)```
+
+These two functions create an input and output component (guess which one is which). They both take the ```label``` used
+for the component. This really should be a one-character label in order to properly fit inside the component. 
+
+#### ```logicCircuit.andComponent()```
+#### ```logicCircuit.nandComponent()```
+#### ```logicCircuit.orComponent()```
+#### ```logicCircuit.norComponent()```
+#### ```logicCircuit.xorComponent()```
+#### ```logicCircuit.eqvComponent()```
+#### ```logicCircuit.notComponent()```
+
+The above functions create the components that you can most probably deduce from the name of the component. 
 
 #### ```component.inputComponent(inputNbr, component)```
 
-
-## Common options
-
- * ```lang``` - The language used, as an ISO language code. Defaults to ```en``` for English. The other supported language is Finnish (```fi```). Can you tell I'm Finnish :) 
+All the functions to create a component return an instance of the component. All the objects have the ```inputComponent```
+function to specify where the input for the component is coming from. The ```inputNbr``` is the position of the input
+(zero-based, top-to-bottom) and the ```component``` is another component object, the output of which will be the input
+for this component. In the example above, the ```andComp``` gets as its input 0 the input component with label ```x```
+and as input 1 the input component with label ```y```. 
