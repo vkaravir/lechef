@@ -5,13 +5,17 @@
   var TRANSLATIONS = {
     "en": {
       SUBMIT: "Submit",
-      YOUR_CIRCUIT: "from your circuit",
-      EXPECTED: "expected"
+      YOUR_CIRCUIT: "Your",
+      EXPECTED: "Expected",
+      INPUT: "Input",
+      OUTPUT_COMPARISON: "Output comparison"
     },
     "fi": {
       SUBMIT: "Lähetä",
-      YOUR_CIRCUIT: "piiristäsi",
-      EXPECTED: "odotettu"
+      YOUR_CIRCUIT: "Sinun",
+      EXPECTED: "Odotettu",
+      INPUT: "Syöte",
+      OUTPUT_COMPARISON: "Ulostulon vertailu"
     }
   };
   var getLocalizedString = function(lang, strkey) {
@@ -111,10 +115,15 @@
   CircuitExerciseFeedback.prototype.initFeedback = function () {
     var outputKey = this.exeropts.output;
     var fbHTML = "<table><thead><tr>";
+    fbHTML += "<th class='lechef-top' colspan='" + this.exeropts.input.length + "'>" +
+                    getLocalizedString(this.lang, "INPUT") + "</th><th class='empty'></th>" +
+                    "<th colspan='2'>" + getLocalizedString(this.lang, "OUTPUT_COMPARISON") +
+                    "</th></tr><tr>";
     fbHTML += "<th>" + this.exeropts.input.join('</th><th>');
-    fbHTML += "</th><th>" + outputKey + " " + getLocalizedString(this.lang, "YOUR_CIRCUIT") + '</th>';
-    fbHTML += "<th class='empty'></th><th>" + outputKey + " " +
-            getLocalizedString(this.lang, "EXPECTED") + "</th></tr></thead><tbody>";
+    fbHTML += "</th><th class='empty'></th><th>" + getLocalizedString(this.lang, "YOUR_CIRCUIT") +
+                    " " + outputKey + '</th>';
+    fbHTML += "<th>" + getLocalizedString(this.lang, "EXPECTED") + " " + outputKey +
+                    "</th></tr></thead><tbody>";
 
     for (var i = 0; i < this.feedback.checks.length; i++) {
       var c = this.feedback.checks[i];
@@ -129,9 +138,9 @@
       } else {
         outVal = (outVal?"1":"0");
       }
-      fbHTML += "<td>" + outVal + "</td>";
       fbHTML += "<td class='empty'></td>";
-      fbHTML += "<td>" + (c.expected?"1":"0") + "</td>";
+      fbHTML += "<td class='lechef-output-table'>" + outVal + "</td>";
+      fbHTML += "<td class='lechef-output-table'>" + (c.expected?"1":"0") + "</td>";
       fbHTML += "</tr>";
     }
     fbHTML += "</tbody></table>";

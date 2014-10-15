@@ -184,14 +184,24 @@
   left: 10px;
   border: 10px solid transparent;
 }
-.lechef-feedback tr.lechef-correct {
-  background-color: greenyellow;
+.lechef-feedback table {
+  position: relative;
 }
-.lechef-feedback tr.lechef-incorrect {
-  background-color: rgb(255, 150, 150);
+.lechef-feedback .lechef-top {
+  text-align: center;
+}
+.lechef-feedback .lechef-correct .lechef-output-table {
+  color: greenyellow;
+}
+.lechef-feedback .lechef-incorrect .lechef-output-table {
+  color: rgb(255, 150, 150);
+}
+.lechef-feedback .lechef-active {
+  font-weight: bolder;
 }
 .lechef-feedback tr.lechef-active:before {
   border-left-color: gray;
+  left: -10px;
 }
 .lechef-buttonpanel {
   text-align: center;
