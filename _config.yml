@@ -1,0 +1,13 @@
+# Site settings
+name: lechef
+title: lechef - logic circuit exercise framework
+email: ville@villekaravirta.com
+description: "Lechef - Logic Circuit Exercise Framework - is a JavaScript library for creating interactive exercises with immediate feedback on the behavior of basic logic gates and circuits made of the gates."
+baseurl: ""
+url: "http://vkaravir.github.com/lechef/"
+github: "http://github.com/vkaravir/lechef/"
+
+# Build settings
+markdown: redcarpet
+permalink: pretty
+highlighter: pygments

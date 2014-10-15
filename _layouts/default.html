@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+    <body>
+    <!-- load jQuery before the page content so it can be used in the examples -->
+    <script src="/js/lechef/libs/jquery-2.1.1.min.js"></script>
+
+    {% include header.html %}
+
+    <div class="container">
+      {{ content }}
+    </div>
+
+    {% include footer.html %}
+
+    <script src="/js/lechef/libs/jquery-ui-1.11.min.js"></script>
+    <script src="/js/lechef/libs/snap.svg-min.js"></script>
+    <script src="/js/lechef/build/lechef.js"></script>
+    </body>
+</html>

@@ -1,0 +1,128 @@
+---
+layout: default
+---
+
+<div class="jumbotron">
+
+  <h1>lechef - Logic Circuit Exercise Framework</h1>
+  <blockquote>Understanding logic circuits is essential in understanding how computers work deep down. The lechef framework enables creation of exercises for practising and understanding the behavior of the basic logical gates, and circuits made from those gates.
+  </blockquote>
+</div>
+  <div class="first-example lechef-exercise">
+    <h2>Your First Logic Circuit Exercise Example</h2>
+    <p><strong>Your task: </strong> Toggle the input and output values of each component in the logic circuit below. As you might know, the output of an AND gate is true (1) only if both of its inputs are true. Use the Reset button to reset the values, and the Feedback button to ask for feedback on your solution at the time.</p>
+    <div class="container">
+      <div class="row">
+        <div id="first-example" class="circuit-container"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <button class="btn btn-info btn-sm btn-block reset">Reset</button>
+        </div>
+        <div class="col-md-6">
+          <button class="btn btn-info btn-sm btn-block feedback">​Feedback​</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function() {
+      var circuit = new LogicCircuit({element: $("#first-example")});
+      var andComp = circuit.andComponent({left: 250, top: 60});
+      var in1 = circuit.inputComponent("x", {left: 50, top: 10});
+      var in2 = circuit.inputComponent("y", {left: 50, top: 110});
+      var out = circuit.outputComponent("f", {left: 400, top: 65});
+      andComp.inputComponent(0, in1);
+      andComp.inputComponent(1, in2);
+      out.inputComponent(0, andComp);
+
+      var simulation = new CircuitSimulationExercise(circuit, {input: {x: true, y: false}});
+      $(".first-example .reset").click(function(event){
+          event.preventDefault();
+          simulation.reset();
+      });
+      $(".first-example .feedback").click(function(event){
+          event.preventDefault();
+          new CircuitSimulationFeedback(simulation.options, simulation.grade());
+      });
+    });
+  </script>
+
+<h2>Features</h2>
+<ul>
+  <li>Two types of exercises:
+    <ul>
+      <li>simulation of a given circuit with given values (like the one above) </li>
+      <li>design of a circuit based on a truth table (or however you like to formulate the question)</li>
+    </ul>
+  </li>
+  <li>Visual, interactive feedback for the learner</li>
+  <li>Support for the basic gates: AND, OR, NOT, NAND, NOR, XOR, EQV</li>
+</ul>
+
+<h2>Documentation</h2>
+
+<p>In the <a href="documentation">documentation</a>, you can find some more examples. It will also introduce you to the configuration options.</p>
+
+<p>If you're not 100% convinced yet, here's another example of a circuit design exercise.</p>
+<div class="design-example lechef-exercise">
+  <h2>Example of circuit design assignment</h2>
+  <p>Construct a circuit using AND, OR, and NOT components that has the following truth-table.</p>
+  <table>
+    <thead>
+    <tr><th>X</th><th>Y</th><th>G</th></tr>
+    </thead>
+    <tbody>
+    <tr><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td>0</td><td>1</td><td>1</td></tr>
+    <tr><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td>0</td><td>0</td><td>0</td></tr>
+    </tbody>
+  </table>
+
+  <div class="container">
+    <div class="row">
+      <div id="design-example" class="circuit-container"></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <button class="btn btn-info btn-sm btn-block reset">Reset</button>
+      </div>
+      <div class="col-md-6">
+        <button class="btn btn-info btn-sm btn-block feedback">​Feedback​</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+  $(function(){
+    var exer = new CircuitExercise({element: $("#design-example"), input: ["x", "y"], output: "g",
+      grading: [{input: {x: true, y: false}, output: true},
+        {input: {x: false, y: true}, output: true},
+        {input: {x: true, y: true}, output: true},
+        {input: {x: false, y: false}, output: false}], components: ["and", "not", "or"], addSubmit: false});
+    $(".design-example .reset").click(function(event){
+        event.preventDefault();
+        exer.reset();
+    });
+    $(".design-example .feedback").click(function(event){
+        event.preventDefault();
+        new CircuitExerciseFeedback(exer.options, exer.grade());
+    });
+  });
+</script>
+<style>
+</style>
+
+<h2>License</h2>
+<p>The library is licensed under the <a href="https://github.com/vkaravir/lechef/blob/master/LICENSE">MIT license</a>.</p>
+
+
+<h2>Contributing</h2>
+<p>I develop the library on <a href="https://github.com/vkaravir/lechef">GitHub</a>, so the best way to contribute would be to report bugs and to submit feature requests using the <a href="https://github.com/vkaravir/lechef/issues">issue tracker</a>. I also highly appreciate well-made pull requests :) If you are planning some major refactoring or new features, go ahead and open an issue for it so we can discuss.</p>
+
+
+<h2>Usage and Research</h2>
+<p>Development of the library has been done mainly for a single course at the University of Turku. If you're interested in using the framework, <a href="mailto:ville@villekaravirta.com">get in touch</a> if there's anything I can help you with.</p>
+<p>I'm also very interested in doing some collaboration on (evaluative) research on learners using the exercises.</p>
