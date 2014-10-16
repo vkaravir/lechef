@@ -160,7 +160,11 @@
         $(this).addClass("lechef-active");
       });
     this.element.find(".lechef-close").click(function() {
-      self.element.remove();
+      if (self.options.element) {
+        self.element.html("");
+      } else {
+        self.element.remove();
+      }
     });
   };
   CircuitExerciseFeedback.prototype.initCircuit = function () {
