@@ -918,7 +918,8 @@
       YOUR_CIRCUIT: "Your",
       EXPECTED: "Expected",
       INPUT: "Input",
-      OUTPUT_COMPARISON: "Output comparison"
+      OUTPUT_COMPARISON: "Output comparison",
+      FEEDBACK: "Feedback"
     },
     "fi": {
       SUBMIT: "Lähetä",
@@ -926,7 +927,8 @@
       YOUR_CIRCUIT: "Sinun",
       EXPECTED: "Odotettu",
       INPUT: "Syöte",
-      OUTPUT_COMPARISON: "Ulostulon vertailu"
+      OUTPUT_COMPARISON: "Ulostulon vertailu",
+      FEEDBACK: "Palaute"
     }
   };
   var getLocalizedString = function(lang, strkey) {
@@ -1025,8 +1027,9 @@
   };
   CircuitExerciseFeedback.prototype.initFeedback = function () {
     var outputKey = this.exeropts.output;
-    var fbHTML = "<button class='close'>"
-                  + getLocalizedString(this.lang, "CLOSE") + "</button><table><thead><tr>";
+    var fbHTML = "<h2>" + getLocalizedString(this.lang, "FEEDBACK") +
+                 "</h2><button class='lechef-close'>" +
+                 getLocalizedString(this.lang, "CLOSE") + "</button><table><thead><tr>";
     fbHTML += "<th class='lechef-top' colspan='" + this.exeropts.input.length + "'>" +
                     getLocalizedString(this.lang, "INPUT") + "</th><th class='empty'></th>" +
                     "<th colspan='2'>" + getLocalizedString(this.lang, "OUTPUT_COMPARISON") +
@@ -1065,7 +1068,7 @@
         $(this).parent().find(".lechef-active").removeClass("lechef-active");
         $(this).addClass("lechef-active");
       });
-    this.element.find(".close").click(function() {
+    this.element.find(".lechef-close").click(function() {
       self.element.remove();
     });
   };
