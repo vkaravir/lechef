@@ -914,6 +914,7 @@
   var TRANSLATIONS = {
     "en": {
       SUBMIT: "Submit",
+      CLOSE: "Close",
       YOUR_CIRCUIT: "Your",
       EXPECTED: "Expected",
       INPUT: "Input",
@@ -921,6 +922,7 @@
     },
     "fi": {
       SUBMIT: "Lähetä",
+      CLOSE: "Sulje",
       YOUR_CIRCUIT: "Sinun",
       EXPECTED: "Odotettu",
       INPUT: "Syöte",
@@ -1023,7 +1025,8 @@
   };
   CircuitExerciseFeedback.prototype.initFeedback = function () {
     var outputKey = this.exeropts.output;
-    var fbHTML = "<table><thead><tr>";
+    var fbHTML = "<button class='close'>"
+                  + getLocalizedString(this.lang, "CLOSE") + "</button><table><thead><tr>";
     fbHTML += "<th class='lechef-top' colspan='" + this.exeropts.input.length + "'>" +
                     getLocalizedString(this.lang, "INPUT") + "</th><th class='empty'></th>" +
                     "<th colspan='2'>" + getLocalizedString(this.lang, "OUTPUT_COMPARISON") +
@@ -1056,13 +1059,15 @@
 
     var self = this;
     this.element.find('.lechef-input-output').html(fbHTML)
-      .find("tbody tr").click(function () {
+      .find("tbody tr").click(function() {
         self.circuit.clearFeedback();
         self.circuit.simulateOutput(self.feedback.checks[$(this).data("check")].input);
         $(this).parent().find(".lechef-active").removeClass("lechef-active");
         $(this).addClass("lechef-active");
       });
-
+    this.element.find(".close").click(function() {
+      self.element.remove();
+    });
   };
   CircuitExerciseFeedback.prototype.initCircuit = function () {
     this.circuit = new LogicCircuit({element: this.element.find(".lechef-circuit")});

@@ -189,6 +189,7 @@
 }
 .lechef-feedback table {
   position: relative;
+  margin: 0 auto;
 }
 .lechef-feedback .lechef-top {
   text-align: center;
