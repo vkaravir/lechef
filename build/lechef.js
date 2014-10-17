@@ -940,10 +940,14 @@
   var CircuitExercise = function (options) {
     this.options = $.extend({components: ["and", "not", "or"],
       template: '<div class="lechef-buttonpanel" />' +
-        '<div class="lechef-circuit" />',
+                '<div class="lechef-circuit" />',
       addSubmit: true}, options);
     this.lang = this.options.lang || "en";
     this.element = this.options.element;
+    this._init();
+  };
+  var exerproto = CircuitExercise.prototype;
+  exerproto._init = function() {
     this.element.html(this.options.template);
     this.editor = new CircuitEditor($.extend({}, this.options, {element: this.element.find(".lechef-circuit"),
       buttonPanelElement: this.element.find(".lechef-buttonpanel")}));
@@ -954,7 +958,6 @@
     this.initInputs();
     this.initOutputs();
   };
-  var exerproto = CircuitExercise.prototype;
   exerproto.addSubmitToToolbar = function () {
     var $buttonPanel = this.options.buttonPanelElement || this.element.find(".lechef-buttonpanel");
     $buttonPanel.prepend('<button class="submit">' + getLocalizedString(this.lang, "SUBMIT") + '</button>');
@@ -988,7 +991,7 @@
     }
   };
   exerproto.reset = function() {
-    // TODO: implement reset
+    this._init();
   };
   exerproto.grade = function () {
     var checks = this.options.grading,
