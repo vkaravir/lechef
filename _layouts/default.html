@@ -5,7 +5,7 @@
 
     <body>
       <!-- load jQuery before the page content so it can be used in the examples -->
-      <script src="/js/lechef/libs/jquery-2.1.1.min.js"></script>
+      <script src="{{ "/js/lechef/libs/jquery-2.1.1.min.js" | prepend: site.baseurl }}"></script>
 
       {% include header.html %}
 
@@ -15,9 +15,9 @@
 
       {% include footer.html %}
 
-      <script src="/js/lechef/libs/jquery-ui-1.11.min.js"></script>
-      <script src="/js/lechef/libs/snap.svg-min.js"></script>
-      <script src="/js/lechef/build/lechef.js"></script>
+      <script src="{{ "/js/lechef/libs/jquery-ui-1.11.min.js" | prepend: site.baseurl }}"></script>
+      <script src="{{ "/js/lechef/libs/snap.svg-min.js" | prepend: site.baseurl }}"></script>
+      <script src="{{ "/js/lechef/build/lechef.js" | prepend: site.baseurl }}"></script>
       <!-- analytics! Sorry folks, I just want to know how many of you there are :) -->
       <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
