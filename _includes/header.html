@@ -1,9 +1,9 @@
 <header class="site-header navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
       <ul class="nav navbar-nav">
-        <li><a class="site-title" href="{{ site.baseurl }}/">{{ site.name }}</a></li>
+        <li><a class="site-title" href="{{ site.baseurl }}/">{{ site.name }} Home</a></li>
         {% for page in site.pages %}
-          <li><a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
+          <li><a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.shorttitle }}</a></li>
         {% endfor %}
       </ul>
   </div>
