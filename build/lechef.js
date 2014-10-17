@@ -987,6 +987,9 @@
         left: Math.min(600, Math.round(0.9 * w)) });
     }
   };
+  exerproto.reset = function() {
+    // TODO: implement reset
+  };
   exerproto.grade = function () {
     var checks = this.options.grading,
       feedback = {checks: [], success: true},
@@ -1187,6 +1190,7 @@
     this.options = $.extend({}, options);
     this.exeropts = exeropts;
     this.feedback = feedback;
+    this.lang = this.options.lang || exeropts.lang || "en";
     if (!this.options.element) {
       this.element = $("<div></div>");
       this.element.appendTo(document.body);
@@ -1194,12 +1198,18 @@
       this.element = $(this.options.element);
     }
     this.element.addClass("lechef-feedback");
-    this.element.html("<div class='lechef-circuit'></div>");
+    this.element.html("<button class='lechef-close'>" + getLocalizedString(this.lang, "CLOSE") +
+                      "</button><div class='lechef-circuit'></div>");
     this.initCircuit();
     this.initFeedback();
 
-    this.element.find("h2").click(function () {
-      this.element.remove();
+    var self = this;
+    this.element.find(".lechef-close").click(function () {
+      if (!self.options.element) {
+        this.element.remove();
+      } else {
+        this.element.html("");
+      }
     }.bind(this));
   };
   CircuitSimulationFeedback.prototype.initCircuit = CircuitExerciseFeedback.prototype.initCircuit;

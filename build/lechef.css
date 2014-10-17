@@ -194,7 +194,7 @@
 .lechef-feedback h2 {
   text-align: center;
 }
-.lechef-feedback button {
+.lechef-feedback .lechef-close {
   position: absolute;
   left: 10px;
   top: 10px;
