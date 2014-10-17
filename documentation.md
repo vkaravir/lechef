@@ -1,16 +1,30 @@
 ---
 layout: page
-title: Documentation
+title: Documentation - lechef circuit API and exercise documentation
+shorttitle: Documentation
 permalink: /documentation/
 ---
 
 
 ## Getting started
 
-TODO:
- * download
- * libraries required
- * basic HTML structure
+There are two ways to get lechef: git clone or zip download. If yout have ```git``` installed, getting lechef source
+code is simple as going to command line, change directory to
+where you want the code to be downloaded (git will, by default, make a subdirectory called ```lechef```), and cloning
+the lechef repository by typing the command
+
+    git clone https://github.com/vkaravir/lechef.git
+
+Now you have the lechef code in the ```lechef``` directory.
+
+If you don't have ```git``` installed, you can [download a ZIP file](https://github.com/vkaravir/lechef/archive/master.zip)
+of the code and unzip it.
+
+Whichever way you got the code, the important directories are ```build``` where the lechef JavaScript and CSS files are,
+and ```libs``` which contains the required JS libraries. lechef does depend on jQuery, jQuery-UI, and Snap.svg. 
+ 
+To get started, read on, or, check the examples in the (awesomely named) ```examples``` directory. They do look like
+crap, but that's to keep the code simple and clean (and not because I'm lazy or anything :) ).
  
 ## Circuit design exercise
 
@@ -32,6 +46,7 @@ And here's the resulting exercise:
 
 <div class="container design-example lechef-exercise">
   <div class="row">
+    <div id="design-example-feedback" class="circuit-container"></div>
     <div id="design-example" class="circuit-container"></div>
   </div>
   <div class="row">
@@ -50,13 +65,21 @@ And here's the resulting exercise:
         {input: {x: false, y: true}, output: false},
         {input: {x: true, y: true}, output: false},
         {input: {x: false, y: false}, output: false}], components: ["and", "not", "or", "eqv"], addSubmit: false});
+    var styleButtons = function() {
+      // add bootstrap classes to style the buttons
+      exer.element.find("button").addClass("btn btn-success btn-sm");
+    };
+    styleButtons();
     $(".design-example .reset").click(function(event){
-        event.preventDefault();
-        exer.reset();
+      event.preventDefault();
+      exer.reset();
+      // reapply the Bootstrap button styles
+      styleButtons();
     });
     $(".design-example .feedback").click(function(event){
         event.preventDefault();
-        new CircuitExerciseFeedback(exer.options, exer.grade());
+        new CircuitExerciseFeedback(exer.options, exer.grade(), {element: $("#design-example-feedback")});
+        $("#design-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
     });
   });
 </script>
@@ -97,6 +120,7 @@ And here's the resulting exercise:
 <div class="first-example lechef-exercise">
   <div class="container">
     <div class="row">
+      <div id="first-example-feedback" class="circuit-container"></div>
       <div id="first-example" class="circuit-container"></div>
     </div>
     <div class="row">
@@ -127,12 +151,13 @@ And here's the resulting exercise:
     });
     $(".first-example .feedback").click(function(event){
         event.preventDefault();
-        new CircuitSimulationFeedback(simulation.options, simulation.grade());
+        new CircuitSimulationFeedback(simulation.options, simulation.grade(), {element: $("#first-example-feedback")});
+        $("#first-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
     });
   });
 </script>
 
-TODO: the options of the ```CircuitSimulationExercise``` constructor.
+The options of the ```CircuitSimulationExercise``` constructor are:
 
  * ```input``` - The values for the input components which the learner should simulate the circuit with. This should be an object with properties matching the labels of the input components and the values booleans.
  * ```lang``` - The language used, as an ISO language code. Defaults to ```en``` for English. The other supported language is Finnish (```fi```).
@@ -168,3 +193,14 @@ function to specify where the input for the component is coming from. The ```inp
 (zero-based, top-to-bottom) and the ```component``` is another component object, the output of which will be the input
 for this component. In the example above, the ```andComp``` gets as its input 0 the input component with label ```x```
 and as input 1 the input component with label ```y```. 
+
+
+## More Examples?
+
+I'm working on creating a more versatile set of examples.. But won't make any promises on when they might arrive :)
+
+## Want to Use lechef For "Something Else"?
+
+Using the lechef circuit API, you can create logic circuit visualizations. Also, the editor used in the design exercises could
+be used to create circuits in other contexts as well. Check the ```src/js/circuits.js``` and 
+```src/js/circuit-editor.js``` for the source code of those parts.
