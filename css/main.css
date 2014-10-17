@@ -1,11 +1,11 @@
 .lechef-circuit {
   margin: 0 auto;
 }
-#first-example {
+.first-example .lechef-circuit {
   height: 180px;
   width: 500px;
 }
-#design-example .lechef-circuit {
+.design-example .lechef-circuit {
   height: 200px;
   width: 700px;
 }
@@ -15,6 +15,9 @@
   border-radius: 6px;
   background: #fff;
 }
+.lechef-exercise .row {
+  position: relative;
+}
 .lechef-exercise .container {
   width: 100%;
 }
@@ -22,7 +25,30 @@
   margin-left: 0;
   padding-left: 15px;
 }
-
+.lechef-exercise .lechef-feedback {
+  position: absolute;
+  top: 0;
+  background: #eee;
+  z-index: 10;
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 6px;
+}
+.lechef-exercise .lechef-feedback:empty {
+  border: none;
+}
+.lechef-feedback table {
+  background-color: white;
+}
+.lechef-feedback thead tr:first-of-type th {
+  border-bottom: 1px solid #666;
+}
+.lechef-feedback th {
+  text-align: center;
+}
+.lechef-buttonpanel button {
+  margin: 0 5px;
+}
 .site-footer {
   border-top: 1px solid black;
   padding-top: 1em;

@@ -13,6 +13,7 @@ layout: default
     <p><strong>Your task: </strong> Toggle the input and output values of each component in the logic circuit below. As you might know, the output of an AND gate is true (1) only if both of its inputs are true. Use the Reset button to reset the values, and the Feedback button to ask for feedback on your solution at the time.</p>
     <div class="container">
       <div class="row">
+        <div id="first-example-feedback" class="circuit-container"></div>
         <div id="first-example" class="circuit-container"></div>
       </div>
       <div class="row">
@@ -43,7 +44,8 @@ layout: default
       });
       $(".first-example .feedback").click(function(event){
           event.preventDefault();
-          new CircuitSimulationFeedback(simulation.options, simulation.grade());
+          new CircuitSimulationFeedback(simulation.options, simulation.grade(), {element: $("#first-example-feedback")});
+          $("#first-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
       });
     });
   </script>
@@ -68,20 +70,21 @@ layout: default
 <div class="design-example lechef-exercise">
   <h2>Example of circuit design assignment</h2>
   <p>Construct a circuit using AND, OR, and NOT components that has the following truth-table.</p>
-  <table>
-    <thead>
-    <tr><th>X</th><th>Y</th><th>G</th></tr>
-    </thead>
-    <tbody>
-    <tr><td>1</td><td>0</td><td>1</td></tr>
-    <tr><td>0</td><td>1</td><td>1</td></tr>
-    <tr><td>1</td><td>1</td><td>1</td></tr>
-    <tr><td>0</td><td>0</td><td>0</td></tr>
-    </tbody>
-  </table>
 
   <div class="container">
     <div class="row">
+      <table>
+        <thead>
+          <tr><th>X</th><th>Y</th><th>G</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td></tr>
+          <tr><td>1</td><td>1</td><td>1</td></tr>
+          <tr><td>0</td><td>0</td><td>0</td></tr>
+        </tbody>
+      </table>
+      <div id="design-example-feedback" class="circuit-container"></div>
       <div id="design-example" class="circuit-container"></div>
     </div>
     <div class="row">
@@ -102,13 +105,21 @@ layout: default
         {input: {x: false, y: true}, output: true},
         {input: {x: true, y: true}, output: true},
         {input: {x: false, y: false}, output: false}], components: ["and", "not", "or"], addSubmit: false});
+    var styleButtons = function() {
+      // add bootstrap classes to style the buttons
+      exer.element.find("button").addClass("btn btn-success btn-sm");
+    };
+    styleButtons();
     $(".design-example .reset").click(function(event){
-        event.preventDefault();
-        exer.reset();
+      event.preventDefault();
+      exer.reset();
+      // reapply the Bootstrap button styles
+      styleButtons();
     });
     $(".design-example .feedback").click(function(event){
         event.preventDefault();
-        new CircuitExerciseFeedback(exer.options, exer.grade());
+        new CircuitExerciseFeedback(exer.options, exer.grade(), {element: $("#design-example-feedback")});
+        $("#design-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
     });
   });
 </script>
