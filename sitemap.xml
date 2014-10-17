@@ -1,0 +1,16 @@
+---
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {% for page in site.pages %}
+   {% comment %}Couldn't figure out how to check if string not contains something, so stupid empty if block{% endcomment %}
+    {% if page.url contains '404' or page.url contains 'sitemap.xml' %}{% else %}
+    <url>
+      <loc>http://vkaravir.github.com/lechef{{ page.url }}</loc>
+      <changefreq>weekly</changefreq>
+      {% comment %}Prioritize the main page higher than the rest{% endcomment %}
+      <priority>{% if page.url == '/' %}1.0{% else %}0.80{% endif %}</priority>
+    </url>
+  {% endif %}
+  {% endfor %}
+</urlset>
