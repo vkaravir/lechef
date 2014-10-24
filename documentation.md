@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Documentation - lechef circuit API and exercise documentation
+title: Documentation - lechef circuit API and exercise
 shorttitle: Documentation
 permalink: /documentation/
 ---
