@@ -3,8 +3,11 @@
       <ul class="nav navbar-nav">
         <li><a class="site-title" href="{{ site.baseurl }}/">{{ site.name }} Home</a></li>
         {% for page in site.pages %}
+          {% if page.shorttitle != null %}
           <li><a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.shorttitle }}</a></li>
+          {% endif %}
         {% endfor %}
+          <li><a class="page-link" href="https://github.com/vkaravir/lechef">Code on GitHub</a></li>
       </ul>
   </div>
 </header>
