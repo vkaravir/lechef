@@ -2,32 +2,6 @@
 (function() {
   "use strict";
 
-  var TRANSLATIONS = {
-    "en": {
-      SUBMIT: "Submit",
-      CLOSE: "Close",
-      YOUR_CIRCUIT: "Your",
-      EXPECTED: "Expected",
-      INPUT: "Input",
-      OUTPUT_COMPARISON: "Output comparison",
-      FEEDBACK: "Feedback"
-    },
-    "fi": {
-      SUBMIT: "Lähetä",
-      CLOSE: "Sulje",
-      YOUR_CIRCUIT: "Sinun",
-      EXPECTED: "Odotettu",
-      INPUT: "Syöte",
-      OUTPUT_COMPARISON: "Ulostulon vertailu",
-      FEEDBACK: "Palaute"
-    }
-  };
-  var getLocalizedString = function(lang, strkey) {
-    if (!TRANSLATIONS[lang] ||!TRANSLATIONS[lang][strkey]) {
-      return strkey;
-    }
-    return TRANSLATIONS[lang][strkey];
-  };
   var CircuitExercise = function (options) {
     this.options = $.extend({components: ["and", "not", "or"],
       template: '<div class="lechef-buttonpanel" />' +
@@ -51,7 +25,7 @@
   };
   exerproto.addSubmitToToolbar = function () {
     var $buttonPanel = this.options.buttonPanelElement || this.element.find(".lechef-buttonpanel");
-    $buttonPanel.prepend('<button class="submit">' + getLocalizedString(this.lang, "SUBMIT") + '</button>');
+    $buttonPanel.prepend('<button class="submit">' + LogicCircuit.getLocalizedString(this.lang, "SUBMIT") + '</button>');
     this.element.find(".submit").click(function () {
       var fb = this.grade();
       new CircuitExerciseFeedback(this.options, fb);
@@ -124,17 +98,17 @@
   };
   CircuitExerciseFeedback.prototype.initFeedback = function () {
     var outputKey = this.exeropts.output;
-    var fbHTML = "<h2>" + getLocalizedString(this.lang, "FEEDBACK") +
+    var fbHTML = "<h2>" + LogicCircuit.getLocalizedString(this.lang, "FEEDBACK") +
                  "</h2><button class='lechef-close'>" +
-                 getLocalizedString(this.lang, "CLOSE") + "</button><table><thead><tr>";
+                 LogicCircuit.getLocalizedString(this.lang, "CLOSE") + "</button><table><thead><tr>";
     fbHTML += "<th class='lechef-top' colspan='" + this.exeropts.input.length + "'>" +
-                    getLocalizedString(this.lang, "INPUT") + "</th><th class='empty'></th>" +
-                    "<th colspan='2'>" + getLocalizedString(this.lang, "OUTPUT_COMPARISON") +
+                    LogicCircuit.getLocalizedString(this.lang, "INPUT") + "</th><th class='empty'></th>" +
+                    "<th colspan='2'>" + LogicCircuit.getLocalizedString(this.lang, "OUTPUT_COMPARISON") +
                     "</th></tr><tr>";
     fbHTML += "<th>" + this.exeropts.input.join('</th><th>');
-    fbHTML += "</th><th class='empty'></th><th>" + getLocalizedString(this.lang, "YOUR_CIRCUIT") +
+    fbHTML += "</th><th class='empty'></th><th>" + LogicCircuit.getLocalizedString(this.lang, "YOUR_CIRCUIT") +
                     " " + outputKey + '</th>';
-    fbHTML += "<th>" + getLocalizedString(this.lang, "EXPECTED") + " " + outputKey +
+    fbHTML += "<th>" + LogicCircuit.getLocalizedString(this.lang, "EXPECTED") + " " + outputKey +
                     "</th></tr></thead><tbody>";
 
     for (var i = 0; i < this.feedback.checks.length; i++) {
@@ -292,7 +266,7 @@
       this.element = $(this.options.element);
     }
     this.element.addClass("lechef-feedback");
-    this.element.html("<button class='lechef-close'>" + getLocalizedString(this.lang, "CLOSE") +
+    this.element.html("<button class='lechef-close'>" + LogicCircuit.getLocalizedString(this.lang, "CLOSE") +
                       "</button><div class='lechef-circuit'></div>");
     this.initCircuit();
     this.initFeedback();

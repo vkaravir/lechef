@@ -1,6 +1,7 @@
 /* global $ Snap */
 (function() {
   "use strict";
+
   var Utils = {
     extend: function(constructor, superConstructor) {
       function SurrogateConstructor() {}
@@ -32,13 +33,16 @@
   // The useful functions are to position the path and to set the
   // value (to make it visually different when there's 'current' in
   // the wire.
-  var CircuitConnection = function(outOf, outOfPos, into, intoPos) {
+  var CircuitConnection = function(outOf, outOfPos, into, intoPos, options) {
     this._outOf = outOf;
     this._outOfPos = outOfPos;
     this._into = into;
     this._intoPos = intoPos;
     var path = outOf.circuit._snap.path("M0 0 L 100 100");
     path.addClass("lechef-connector");
+    if (typeof options === "object" && options.connectorRemoveAllowed) {
+      path.dblclick(this.remove.bind(this));
+    }
     this._path = path;
     this.positionPath();
   };
@@ -68,6 +72,10 @@
   // Clear the value.
   CircuitConnection.prototype.clearValue = function() {
     this._path.removeClass([CIRCUIT_CONSTANTS.VALCLASS[true], CIRCUIT_CONSTANTS.VALCLASS[false]].join(" "));
+  };
+  // Remove this connector.
+  CircuitConnection.prototype.remove = function() {
+    this._into.removeInput(this._intoPos);
   };
   // Destroy this connector. This will remove the SVG path used.
   CircuitConnection.prototype.destroy = function() {
@@ -163,7 +171,7 @@
     this._outputs[outpos].push(comp);
     this._outputpaths[outpos].push(path);
   };
-  compproto.inputComponent = function(inpos, outpos, comp) {
+  compproto.inputComponent = function(inpos, outpos, comp, opts) {
     if (typeof outpos === "object") {
       comp = outpos;
       outpos = 0;
@@ -173,7 +181,7 @@
     this.removeInput(inpos);
 
     this._inputs[inpos] = comp;
-    var path = new CircuitConnection(comp, outpos, this, inpos);
+    var path = new CircuitConnection(comp, outpos, this, inpos, opts);
     this._inputpaths[inpos] = path;
     comp._outputComponent(outpos, this, path);
   };
@@ -823,6 +831,38 @@
   };
 
   window.LogicCircuit = LogicCircuit;
+
+
+  var TRANSLATIONS = {
+    "en": {
+      SUBMIT: "Submit",
+      CLOSE: "Close",
+      YOUR_CIRCUIT: "Your",
+      EXPECTED: "Expected",
+      INPUT: "Input",
+      OUTPUT_COMPARISON: "Output comparison",
+      FEEDBACK: "Feedback",
+      REMOVE_CONFIRM: "Are you sure you want to remove this component?"
+    },
+    "fi": {
+      SUBMIT: "Lähetä",
+      CLOSE: "Sulje",
+      YOUR_CIRCUIT: "Sinun",
+      EXPECTED: "Odotettu",
+      INPUT: "Syöte",
+      OUTPUT_COMPARISON: "Ulostulon vertailu",
+      FEEDBACK: "Palaute",
+      REMOVE_CONFIRM: "Haluatko varmasti poistaa tämän komponentin?"
+    }
+  };
+  LogicCircuit.TRANSLATIONS = TRANSLATIONS;
+  LogicCircuit.getLocalizedString = function(lang, strkey) {
+    if (!TRANSLATIONS[lang] ||!TRANSLATIONS[lang][strkey]) {
+      return strkey;
+    }
+    return TRANSLATIONS[lang][strkey];
+  };
+
 }());
 /* global $ Snap */
 (function() {
@@ -830,9 +870,13 @@
   var CircuitEditor = function (options) {
     this.options = $.extend({useImages: false}, options);
     this.element = this.options.element;
+    this.lang = this.options.lang || "en";
     this.circuit = new LogicCircuit(options);
     this.createToolbar();
     this.initToolbar();
+
+    this._editorTools = $("<div class='lechef-tools hidden'><span class='lechef-remove'>x</span></div>");
+    this.element.append(this._editorTools);
   };
   var editorproto = CircuitEditor.prototype;
   editorproto.createToolbar = function () {
@@ -849,56 +893,65 @@
     this.buttonPanel = $buttonPanel;
   };
   editorproto.initToolbar = function () {
-    var $buttonPanel = this.buttonPanel;
+    var $buttonPanel = this.buttonPanel,
+        compOptions = {removeAllowed: true};
     $(".addnot", $buttonPanel).click(function () {
-      var comp = this.circuit.notComponent();
+      var comp = this.circuit.notComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addand", $buttonPanel).click(function () {
-      var comp = this.circuit.andComponent();
+      var comp = this.circuit.andComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addnand", $buttonPanel).click(function () {
-      var comp = this.circuit.nandComponent();
+      var comp = this.circuit.nandComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addor", $buttonPanel).click(function () {
-      var comp = this.circuit.orComponent();
+      var comp = this.circuit.orComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addnor", $buttonPanel).click(function () {
-      var comp = this.circuit.norComponent();
+      var comp = this.circuit.norComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addxor", $buttonPanel).click(function () {
-      var comp = this.circuit.xorComponent();
+      var comp = this.circuit.xorComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addeqv", $buttonPanel).click(function () {
-      var comp = this.circuit.eqvComponent();
+      var comp = this.circuit.eqvComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addha", $buttonPanel).click(function () {
-      var comp = this.circuit.halfAdderComponent();
+      var comp = this.circuit.halfAdderComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addhs", $buttonPanel).click(function () {
-      var comp = this.circuit.halfSubstractorComponent();
+      var comp = this.circuit.halfSubstractorComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
   };
   editorproto.setInteractive = function (comp) {
     var x, y,
-      editor = this;
+        editor = this;
+    if (comp.options.removeAllowed) {
+      comp.element.dblclick(function() {
+        var remove = confirm(LogicCircuit.getLocalizedString(editor.lang, "REMOVE_CONFIRM"));
+        if (remove) {
+          editor.circuit.removeComponent(comp);
+        }
+      });
+    }
     comp.element.find('.lechef-output').draggable({
       revert: true,
       helper: "clone",
@@ -925,7 +978,7 @@
       },
       stop: function (evt, ui) {
         if (editor.selected) {
-          editor.selected.inputComponent(editor.pos, ui.helper.data("pos"), comp);
+          editor.selected.inputComponent(editor.pos, ui.helper.data("pos"), comp, {connectorRemoveAllowed: true});
         }
         editor.path.remove();
         editor.path = null;
@@ -971,32 +1024,6 @@
 (function() {
   "use strict";
 
-  var TRANSLATIONS = {
-    "en": {
-      SUBMIT: "Submit",
-      CLOSE: "Close",
-      YOUR_CIRCUIT: "Your",
-      EXPECTED: "Expected",
-      INPUT: "Input",
-      OUTPUT_COMPARISON: "Output comparison",
-      FEEDBACK: "Feedback"
-    },
-    "fi": {
-      SUBMIT: "Lähetä",
-      CLOSE: "Sulje",
-      YOUR_CIRCUIT: "Sinun",
-      EXPECTED: "Odotettu",
-      INPUT: "Syöte",
-      OUTPUT_COMPARISON: "Ulostulon vertailu",
-      FEEDBACK: "Palaute"
-    }
-  };
-  var getLocalizedString = function(lang, strkey) {
-    if (!TRANSLATIONS[lang] ||!TRANSLATIONS[lang][strkey]) {
-      return strkey;
-    }
-    return TRANSLATIONS[lang][strkey];
-  };
   var CircuitExercise = function (options) {
     this.options = $.extend({components: ["and", "not", "or"],
       template: '<div class="lechef-buttonpanel" />' +
@@ -1020,7 +1047,7 @@
   };
   exerproto.addSubmitToToolbar = function () {
     var $buttonPanel = this.options.buttonPanelElement || this.element.find(".lechef-buttonpanel");
-    $buttonPanel.prepend('<button class="submit">' + getLocalizedString(this.lang, "SUBMIT") + '</button>');
+    $buttonPanel.prepend('<button class="submit">' + LogicCircuit.getLocalizedString(this.lang, "SUBMIT") + '</button>');
     this.element.find(".submit").click(function () {
       var fb = this.grade();
       new CircuitExerciseFeedback(this.options, fb);
@@ -1093,17 +1120,17 @@
   };
   CircuitExerciseFeedback.prototype.initFeedback = function () {
     var outputKey = this.exeropts.output;
-    var fbHTML = "<h2>" + getLocalizedString(this.lang, "FEEDBACK") +
+    var fbHTML = "<h2>" + LogicCircuit.getLocalizedString(this.lang, "FEEDBACK") +
                  "</h2><button class='lechef-close'>" +
-                 getLocalizedString(this.lang, "CLOSE") + "</button><table><thead><tr>";
+                 LogicCircuit.getLocalizedString(this.lang, "CLOSE") + "</button><table><thead><tr>";
     fbHTML += "<th class='lechef-top' colspan='" + this.exeropts.input.length + "'>" +
-                    getLocalizedString(this.lang, "INPUT") + "</th><th class='empty'></th>" +
-                    "<th colspan='2'>" + getLocalizedString(this.lang, "OUTPUT_COMPARISON") +
+                    LogicCircuit.getLocalizedString(this.lang, "INPUT") + "</th><th class='empty'></th>" +
+                    "<th colspan='2'>" + LogicCircuit.getLocalizedString(this.lang, "OUTPUT_COMPARISON") +
                     "</th></tr><tr>";
     fbHTML += "<th>" + this.exeropts.input.join('</th><th>');
-    fbHTML += "</th><th class='empty'></th><th>" + getLocalizedString(this.lang, "YOUR_CIRCUIT") +
+    fbHTML += "</th><th class='empty'></th><th>" + LogicCircuit.getLocalizedString(this.lang, "YOUR_CIRCUIT") +
                     " " + outputKey + '</th>';
-    fbHTML += "<th>" + getLocalizedString(this.lang, "EXPECTED") + " " + outputKey +
+    fbHTML += "<th>" + LogicCircuit.getLocalizedString(this.lang, "EXPECTED") + " " + outputKey +
                     "</th></tr></thead><tbody>";
 
     for (var i = 0; i < this.feedback.checks.length; i++) {
@@ -1261,7 +1288,7 @@
       this.element = $(this.options.element);
     }
     this.element.addClass("lechef-feedback");
-    this.element.html("<button class='lechef-close'>" + getLocalizedString(this.lang, "CLOSE") +
+    this.element.html("<button class='lechef-close'>" + LogicCircuit.getLocalizedString(this.lang, "CLOSE") +
                       "</button><div class='lechef-circuit'></div>");
     this.initCircuit();
     this.initFeedback();

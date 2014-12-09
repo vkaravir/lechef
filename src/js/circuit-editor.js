@@ -4,9 +4,13 @@
   var CircuitEditor = function (options) {
     this.options = $.extend({useImages: false}, options);
     this.element = this.options.element;
+    this.lang = this.options.lang || "en";
     this.circuit = new LogicCircuit(options);
     this.createToolbar();
     this.initToolbar();
+
+    this._editorTools = $("<div class='lechef-tools hidden'><span class='lechef-remove'>x</span></div>");
+    this.element.append(this._editorTools);
   };
   var editorproto = CircuitEditor.prototype;
   editorproto.createToolbar = function () {
@@ -23,56 +27,65 @@
     this.buttonPanel = $buttonPanel;
   };
   editorproto.initToolbar = function () {
-    var $buttonPanel = this.buttonPanel;
+    var $buttonPanel = this.buttonPanel,
+        compOptions = {removeAllowed: true};
     $(".addnot", $buttonPanel).click(function () {
-      var comp = this.circuit.notComponent();
+      var comp = this.circuit.notComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addand", $buttonPanel).click(function () {
-      var comp = this.circuit.andComponent();
+      var comp = this.circuit.andComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addnand", $buttonPanel).click(function () {
-      var comp = this.circuit.nandComponent();
+      var comp = this.circuit.nandComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addor", $buttonPanel).click(function () {
-      var comp = this.circuit.orComponent();
+      var comp = this.circuit.orComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addnor", $buttonPanel).click(function () {
-      var comp = this.circuit.norComponent();
+      var comp = this.circuit.norComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addxor", $buttonPanel).click(function () {
-      var comp = this.circuit.xorComponent();
+      var comp = this.circuit.xorComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addeqv", $buttonPanel).click(function () {
-      var comp = this.circuit.eqvComponent();
+      var comp = this.circuit.eqvComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addha", $buttonPanel).click(function () {
-      var comp = this.circuit.halfAdderComponent();
+      var comp = this.circuit.halfAdderComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
     $(".addhs", $buttonPanel).click(function () {
-      var comp = this.circuit.halfSubstractorComponent();
+      var comp = this.circuit.halfSubstractorComponent(compOptions);
       this.element.trigger("lechef-circuit-changed");
       this.setInteractive(comp);
     }.bind(this));
   };
   editorproto.setInteractive = function (comp) {
     var x, y,
-      editor = this;
+        editor = this;
+    if (comp.options.removeAllowed) {
+      comp.element.dblclick(function() {
+        var remove = confirm(LogicCircuit.getLocalizedString(editor.lang, "REMOVE_CONFIRM"));
+        if (remove) {
+          editor.circuit.removeComponent(comp);
+        }
+      });
+    }
     comp.element.find('.lechef-output').draggable({
       revert: true,
       helper: "clone",
@@ -99,7 +112,7 @@
       },
       stop: function (evt, ui) {
         if (editor.selected) {
-          editor.selected.inputComponent(editor.pos, ui.helper.data("pos"), comp);
+          editor.selected.inputComponent(editor.pos, ui.helper.data("pos"), comp, {connectorRemoveAllowed: true});
         }
         editor.path.remove();
         editor.path = null;

@@ -1,6 +1,7 @@
 /* global $ Snap */
 (function() {
   "use strict";
+
   var Utils = {
     extend: function(constructor, superConstructor) {
       function SurrogateConstructor() {}
@@ -32,13 +33,16 @@
   // The useful functions are to position the path and to set the
   // value (to make it visually different when there's 'current' in
   // the wire.
-  var CircuitConnection = function(outOf, outOfPos, into, intoPos) {
+  var CircuitConnection = function(outOf, outOfPos, into, intoPos, options) {
     this._outOf = outOf;
     this._outOfPos = outOfPos;
     this._into = into;
     this._intoPos = intoPos;
     var path = outOf.circuit._snap.path("M0 0 L 100 100");
     path.addClass("lechef-connector");
+    if (typeof options === "object" && options.connectorRemoveAllowed) {
+      path.dblclick(this.remove.bind(this));
+    }
     this._path = path;
     this.positionPath();
   };
@@ -68,6 +72,10 @@
   // Clear the value.
   CircuitConnection.prototype.clearValue = function() {
     this._path.removeClass([CIRCUIT_CONSTANTS.VALCLASS[true], CIRCUIT_CONSTANTS.VALCLASS[false]].join(" "));
+  };
+  // Remove this connector.
+  CircuitConnection.prototype.remove = function() {
+    this._into.removeInput(this._intoPos);
   };
   // Destroy this connector. This will remove the SVG path used.
   CircuitConnection.prototype.destroy = function() {
@@ -163,7 +171,7 @@
     this._outputs[outpos].push(comp);
     this._outputpaths[outpos].push(path);
   };
-  compproto.inputComponent = function(inpos, outpos, comp) {
+  compproto.inputComponent = function(inpos, outpos, comp, opts) {
     if (typeof outpos === "object") {
       comp = outpos;
       outpos = 0;
@@ -173,7 +181,7 @@
     this.removeInput(inpos);
 
     this._inputs[inpos] = comp;
-    var path = new CircuitConnection(comp, outpos, this, inpos);
+    var path = new CircuitConnection(comp, outpos, this, inpos, opts);
     this._inputpaths[inpos] = path;
     comp._outputComponent(outpos, this, path);
   };
@@ -823,4 +831,36 @@
   };
 
   window.LogicCircuit = LogicCircuit;
+
+
+  var TRANSLATIONS = {
+    "en": {
+      SUBMIT: "Submit",
+      CLOSE: "Close",
+      YOUR_CIRCUIT: "Your",
+      EXPECTED: "Expected",
+      INPUT: "Input",
+      OUTPUT_COMPARISON: "Output comparison",
+      FEEDBACK: "Feedback",
+      REMOVE_CONFIRM: "Are you sure you want to remove this component?"
+    },
+    "fi": {
+      SUBMIT: "Lähetä",
+      CLOSE: "Sulje",
+      YOUR_CIRCUIT: "Sinun",
+      EXPECTED: "Odotettu",
+      INPUT: "Syöte",
+      OUTPUT_COMPARISON: "Ulostulon vertailu",
+      FEEDBACK: "Palaute",
+      REMOVE_CONFIRM: "Haluatko varmasti poistaa tämän komponentin?"
+    }
+  };
+  LogicCircuit.TRANSLATIONS = TRANSLATIONS;
+  LogicCircuit.getLocalizedString = function(lang, strkey) {
+    if (!TRANSLATIONS[lang] ||!TRANSLATIONS[lang][strkey]) {
+      return strkey;
+    }
+    return TRANSLATIONS[lang][strkey];
+  };
+
 }());
