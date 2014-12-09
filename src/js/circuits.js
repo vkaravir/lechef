@@ -23,6 +23,15 @@
                     false: "lechef-value-incorrect"}
   };
 
+  // Connector in the logic circuit from one component's output to
+  // another's input. *DO NOT* modify the inputs and outputs through
+  // this object.
+  //
+  // The path of the connector is an SVG path, drawn with Snap.SVG.
+  //
+  // The useful functions are to position the path and to set the
+  // value (to make it visually different when there's 'current' in
+  // the wire.
   var CircuitConnection = function(outOf, outOfPos, into, intoPos) {
     this._outOf = outOf;
     this._outOfPos = outOfPos;
@@ -33,6 +42,8 @@
     this._path = path;
     this.positionPath();
   };
+  // Re-calculates the position of this path. In case you want to do some more
+  // intelligent drawing, this would be a good function to overwrite :)
   CircuitConnection.prototype.positionPath = function() {
     var end = this._into._getInputLocation(this._intoPos);
     var start = this._outOf._getOutputLocation(this._outOfPos);
@@ -50,12 +61,15 @@
                       " " + ctrl2X + " " + endY + // cubic bezier, second control point
                       " " + endX + " " + endY);
   };
+  // Set the value of this connector. The value should be either true or false.
   CircuitConnection.prototype.setValue = function(value) {
     this._path.addClass(CIRCUIT_CONSTANTS.VALCLASS[value]);
   };
+  // Clear the value.
   CircuitConnection.prototype.clearValue = function() {
     this._path.removeClass([CIRCUIT_CONSTANTS.VALCLASS[true], CIRCUIT_CONSTANTS.VALCLASS[false]].join(" "));
   };
+  // Destroy this connector. This will remove the SVG path used.
   CircuitConnection.prototype.destroy = function() {
     this._path.remove();
   };
@@ -138,7 +152,9 @@
     }
   };
   // dummy implementation for the drawComponent
-  compproto.drawComponent = function() {};
+  compproto.drawComponent = function() {
+    console.error("Circuit components should implement drawComponent!");
+  };
   compproto._outputComponent = function(outpos, comp, path) {
     if (!this._outputs[outpos]) {
       this._outputs[outpos] = [];
@@ -177,6 +193,40 @@
       this._inputs[pos] = null;
       this._inputpaths[pos] = null;
     }
+  };
+  compproto.getOutputComponents = function(pos) {
+    if (pos < 0 || pos >= this._outputs.length) {
+      return [];
+    } else {
+      return this._outputs[pos];
+    }
+  };
+  compproto.remove = function() {
+    var i, j, k, o, c;
+    // remove all inputs to this component
+    for (i = this._inputs.length; i--; ) {
+      this.removeInput(i);
+    }
+    // Connections are defined by the component they are input to.
+    // So, we go through all outputs of this component and all the
+    // components the outputs are connected (2nd loop). Then we go
+    // through the inputs of that component and try to find this
+    // component (which we are removing). If we find this component,
+    // we remove it as input. Simple, right ;)
+    for (i = this._outputs.length; i--; ) {
+      o = this._outputs[i];
+      for (j = o.length; j--; ) {
+        c = o[j];
+        for (k = c._inputs.length; k--; ) {
+          if (this === c._inputs[k]) {
+            c.removeInput(k);
+            break;
+          }
+        }
+        //this._removeOutput(o[j]);
+      }
+    }
+    this.element.remove();
   };
   compproto._getOutputLocation = function(pos) {
     var e = this._outputElements[pos],
@@ -703,6 +753,16 @@
     var comp = new CircuitHalfSubstractorComponent(this, options);
     this._components.push(comp);
     return comp;
+  };
+  logicproto.removeComponent = function(comp) {
+    var index = this._components.indexOf(comp);
+    if (index !== -1) {
+      this._components.splice(index, 1);
+      comp.remove();
+    }
+  };
+  logicproto.components = function() {
+    return this._components.slice(0);
   };
   logicproto.simulateOutput = function(input) {
     var result = {},

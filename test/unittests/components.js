@@ -92,7 +92,6 @@ QUnit.test("Half-adder simulation", function(assert) {
   assert.deepEqual(adder.simulateOutput({x: true, y: false}), [true, false], "Testing Half-adder with input true, false");
   assert.deepEqual(adder.simulateOutput({x: false, y: true}), [true, false], "Testing Half-adder with input false, true");
   assert.deepEqual(adder.simulateOutput({x: true, y: true}), [false, true], "Testing Half-adder with input true, true");
-  console.log(circ.simulateOutput({x: true, y: false}));
 });
 QUnit.test("Half-substractor simulation", function(assert) {
   var circ = initTestCircuit();
@@ -111,5 +110,4 @@ QUnit.test("Half-substractor simulation", function(assert) {
   assert.deepEqual(substractor.simulateOutput({x: true, y: false}), [true, false], "Testing Half-sub with input true, false");
   assert.deepEqual(substractor.simulateOutput({x: false, y: true}), [true, true], "Testing Half-sub with input false, true");
   assert.deepEqual(substractor.simulateOutput({x: true, y: true}), [false, false], "Testing Half-sub with input true, true");
-  console.log(circ.simulateOutput({x: true, y: false}));
 });
