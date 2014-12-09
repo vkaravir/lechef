@@ -31,6 +31,12 @@ module.exports = function(grunt) {
         src: ["src/css/circuits.css"],
         dest: 'build/lechef.css'
       }
+    },
+    watch: {
+      lechef: {
+        files: ['src/**/*'],
+        tasks: ['default']
+      }
     }
   });
 
