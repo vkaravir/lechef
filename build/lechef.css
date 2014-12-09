@@ -140,9 +140,6 @@
 .lechef-output {
   right: -10px;
 }
-.lechef-output:hover {
-  cursor: hand;
-}
 .lechef-input {
   left: -10px;
   z-index: 200 !important;
