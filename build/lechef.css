@@ -184,6 +184,7 @@
 .lechef-feedback table {
   position: relative;
   margin: 0 auto;
+  text-align: center;
 }
 .lechef-feedback tbody tr {
   cursor: pointer;
