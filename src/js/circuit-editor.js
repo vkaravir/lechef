@@ -142,7 +142,7 @@
       return this.circuit.state();
     } else {
       this.circuit.state(newState);
-      var comps = this.circuit._components;
+      var comps = this.circuit.components();
       for (var i = comps.length; i--;) {
         this.setInteractive(comps[i]);
       }

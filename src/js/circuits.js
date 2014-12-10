@@ -795,7 +795,7 @@
     }
   };
   logicproto.state = function(newState) {
-    var state, c, i, j, newC;
+    var state, c, i, j, newC, comps;
     if (typeof newState === "undefined") { // return state
       state = {components: [], connections: []};
       for (i = 0; i < this._components.length; i++) {
@@ -813,6 +813,10 @@
       }
       return state;
     } else { // set current state
+      comps = this.components();
+      for (i = comps.length; i--; ) {
+        this.removeComponent(comps[i]);
+      }
       for (i = 0; i < newState.components.length; i++) {
         c = newState.components[i];
         if (c.name === "input") {
