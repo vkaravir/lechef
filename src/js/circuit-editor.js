@@ -8,9 +8,6 @@
     this.circuit = new LogicCircuit(options);
     this.createToolbar();
     this.initToolbar();
-
-    this._editorTools = $("<div class='lechef-tools hidden'><span class='lechef-remove'>x</span></div>");
-    this.element.append(this._editorTools);
   };
   var editorproto = CircuitEditor.prototype;
   editorproto.createToolbar = function () {
