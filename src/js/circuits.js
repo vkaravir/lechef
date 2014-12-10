@@ -674,9 +674,15 @@
   };
 
   var LogicCircuit = function(options) {
-    this.element = options.element || $("<div />");
-    if (!options.element) {
+    var opts = $.extend({autoresize: true}, options);
+    this.element = opts.element || $("<div />");
+    if (!opts.element) {
       this.element.appendTo(document.body);
+    }
+    if (opts.autoresize) {
+      this.element.on("lechef-circuit-changed", function() {
+        this._resize();
+      }.bind(this));
     }
     var svgId = "LC" + new Date().getTime();
     this.element.append("<svg id='" + svgId + "'></svg>");
@@ -699,6 +705,19 @@
   };
 
   var logicproto = LogicCircuit.prototype;
+  logicproto._resize = function() {
+    var e = this.element,
+        mx = e.width(),
+        my = e.height();
+    e.find(".lechef-component").each(function(index, item) {
+      var $item = $(item);
+      var pos = $item.position();
+      mx = Math.max(mx, pos.left + $item.width() + 20);
+      my = Math.max(my, pos.top + $item.height());
+    });
+    e.css({height: my, width: mx});
+
+  };
   logicproto.andComponent = function(options) {
     var comp = new CircuitAndComponent(this, options);
     this._components.push(comp);
