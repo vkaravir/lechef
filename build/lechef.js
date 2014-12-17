@@ -966,7 +966,10 @@
         editor = this;
     if (comp.options.removeAllowed) {
       comp.element.dblclick(function() {
-        var remove = confirm(LogicCircuit.getLocalizedString(editor.lang, "REMOVE_CONFIRM"));
+        var remove = true;
+        if (editor.options.removeConfirm) {
+          remove = confirm(LogicCircuit.getLocalizedString(editor.lang, "REMOVE_CONFIRM"));
+        }
         if (remove) {
           editor.circuit.removeComponent(comp);
         }
