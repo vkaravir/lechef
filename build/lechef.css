@@ -4,6 +4,12 @@
 }
 .lechef-circuit {
   position: relative;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .lechef-circuit svg, .lechef-circuit svg * {
   z-index: 10;
@@ -150,7 +156,8 @@
 .lechef-output:hover, .lechef-input.over {
   box-shadow: 0 0 10px green;
 }
-.lechef-input.lechef-missing {
+.lechef-input.lechef-missing,
+.lechef-output.lechef-missing {
   border-color: red;
   box-shadow: 0 0 10px red;
 }

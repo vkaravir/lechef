@@ -27,8 +27,10 @@
     var $buttonPanel = this.options.buttonPanelElement || this.element.find(".lechef-buttonpanel");
     $buttonPanel.prepend('<button class="submit">' + LogicCircuit.getLocalizedString(this.lang, "SUBMIT") + '</button>');
     this.element.find(".submit").click(function () {
-      var fb = this.grade();
-      new CircuitExerciseFeedback(this.options, fb);
+      this.grade(function(fb) {
+        this.editor.circuit.clearFeedback();
+        new CircuitExerciseFeedback(this.options, fb);
+      }.bind(this));
     }.bind(this));
   };
   exerproto.initInputs = function () {
@@ -58,25 +60,33 @@
   exerproto.reset = function() {
     this._init();
   };
-  exerproto.grade = function () {
-    var checks = this.options.grading,
+  exerproto.grade = function (callback) {
+    var checks = $.extend([], this.options.grading),
       feedback = {checks: [], success: true},
       correct;
-    for (var i = 0; i < checks.length; i++) {
-      var c = checks[i];
+    var doCheck = function(c) {
       this.editor.circuit.clearFeedback();
-      var res = this.editor.circuit.simulateOutput(c.input);
-      if (this.options.output.length === 1) {
-        correct = (c.output === res[this.options.output[0]]);
-      }
-      feedback.success = feedback.success && correct;
-      var checkFb = { input: $.extend({}, c.input), output: $.extend({}, res),
-        expected: c.output, correct: correct};
-      feedback.checks.push(checkFb);
+      this.editor.circuit.simulateOutput(c.input, false, function(res) {
+        if (this.options.output.length === 1) {
+          correct = (c.output === res[this.options.output[0]]);
+        }
+        feedback.success = feedback.success && correct;
+        var checkFb = { input: $.extend({}, c.input), output: $.extend({}, res),
+          expected: c.output, correct: correct};
+        feedback.checks.push(checkFb);
+        checks.splice(checks.indexOf(c), 1);
+        if (checks.length > 0) {
+          doCheck(checks[0]);
+        } else {
+          this.editor.circuit.clearFeedback();
+          feedback.circuit = this.editor.circuit.state();
+          callback(feedback);
+        }
+      }.bind(this));
+    }.bind(this);
+    if (checks && checks.length > 0) {
+      doCheck(checks[0]);
     }
-    feedback.circuit = this.editor.circuit.state();
-    this.editor.circuit.clearFeedback();
-    return feedback;
   };
 
   var CircuitExerciseFeedback = function (exeropts, feedback, options) {
@@ -135,7 +145,7 @@
     this.element.find('.lechef-input-output').html(fbHTML)
       .find("tbody tr").click(function() {
         self.circuit.clearFeedback();
-        self.circuit.simulateOutput(self.feedback.checks[$(this).data("check")].input);
+        self.circuit.simulateOutput(self.feedback.checks[$(this).data("check")].input, true);
         $(this).parent().find(".lechef-active").removeClass("lechef-active");
         $(this).addClass("lechef-active");
       });
@@ -194,7 +204,7 @@
                       .addClass("lechef-value-unknown");
   };
 
-  CircuitSimulationExercise.prototype.grade = function () {
+  CircuitSimulationExercise.prototype.grade = function (callback) {
     var outputValue = function (comp) {
         if (comp.element.find(".lechef-output." + CIRCUIT_CONSTANTS.VALCLASS[true]).size() > 0) {
           return true;
@@ -217,41 +227,42 @@
       };
     var modelcircuit = new LogicCircuit({});
     modelcircuit.state(this.circuit.state());
-    modelcircuit.simulateOutput(this.options.input);
-    var modelComps = modelcircuit._components,
-      stdComps = this.circuit._components,
-      mc, sc, fb, corr, state, val, success = true,
-      feedback = [],
-      states = [];
-    for (var i = 0, l = stdComps.length; i < l; i++) {
-      mc = modelComps[i];
-      sc = stdComps[i];
-      if (!(sc instanceof LogicCircuit.COMPONENT_TYPES.CircuitInputComponent)) {
-        fb = {input: []};
-        feedback.push(fb);
-        state = {input: []};
-        states.push(state);
-        if (!(sc instanceof LogicCircuit.COMPONENT_TYPES.CircuitOutputComponent)) {
-          val = outputValue(sc);
-          corr = (val === outputValue(mc));
-          success = success && corr;
-          fb.output = corr;
-          state.output = val;
+    modelcircuit.simulateOutput(this.options.input, true, function() {
+      var modelComps = modelcircuit._components,
+        stdComps = this.circuit._components,
+        mc, sc, fb, corr, state, val, success = true,
+        feedback = [],
+        states = [];
+      for (var i = 0, l = stdComps.length; i < l; i++) {
+        mc = modelComps[i];
+        sc = stdComps[i];
+        if (!(sc instanceof LogicCircuit.COMPONENT_TYPES.CircuitInputComponent)) {
+          fb = {input: []};
+          feedback.push(fb);
+          state = {input: []};
+          states.push(state);
+          if (!(sc instanceof LogicCircuit.COMPONENT_TYPES.CircuitOutputComponent)) {
+            val = outputValue(sc);
+            corr = (val === outputValue(mc));
+            success = success && corr;
+            fb.output = corr;
+            state.output = val;
+          }
+          for (var j = 0; j < sc._inputCount; j++) {
+            val = inputValue(sc, j);
+            corr = (val === inputValue(mc, j));
+            success = success && corr;
+            fb.input.push(corr);
+            state.input.push(val);
+          }
+        } else {
+          feedback.push(null);
+          states.push(null);
         }
-        for (var j = 0; j < sc._inputCount; j++) {
-          val = inputValue(sc, j);
-          corr = (val === inputValue(mc, j));
-          success = success && corr;
-          fb.input.push(corr);
-          state.input.push(val);
-        }
-      } else {
-        feedback.push(null);
-        states.push(null);
       }
-    }
-    modelcircuit.element.remove();
-    return {feedback: feedback, states: states, success: success, circuit: this.circuit.state()};
+      modelcircuit.element.remove();
+      callback({feedback: feedback, states: states, success: success, circuit: this.circuit.state()});
+    }.bind(this));
   };
 
   var CircuitSimulationFeedback = function (exeropts, feedback, options) {

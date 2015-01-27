@@ -92,7 +92,9 @@ button img {
   var exer = new CircuitSimulationExercise(circuit, {input: {x: true, y: false}});
 
   $("#submit").click(function() {
-    new CircuitSimulationFeedback(exer.options, exer.grade());
+    exer.grade(function(feedback) {
+      new CircuitSimulationFeedback(exer.options, feedback);
+    });
   });
 </script>
 </body>

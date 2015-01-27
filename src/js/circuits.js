@@ -92,11 +92,9 @@
   //  - drawComponent: this function should draw the shape of the component
   //                  *and* position the input and output connector elements
   //                  appropriately
-  //  - simulateOutput(input): this function should return the output of the
-  //                  component. Note, that the input (which is an object) isn't
-  //                  input for this component but for the whole circuit. You
-  //                  should thus pass the input downward in the circuit and ask
-  //                  the component's inputs to simulateOutput "recursively".
+  //  - calculateOutput(input): this function should return the output of the
+  //                  component. Note, that the input is an array of
+  //                  input for this component.
   var CircuitComponent = function(circuit, options) {
     this.init(circuit, options);
   };
@@ -299,18 +297,17 @@
       }
     }
   };
-  compproto.validateInputs = function() {
-    var valid = true;
+  compproto.validateInputs = function(showFeedback) {
     for (var i = this._inputCount; i--; ) {
       var input = this._inputs[i];
       if (!input) {
-        this._inputElements[i].addClass("lechef-missing");
-        valid = false;
-      } else {
-        valid = input.validateInputs() && valid;
+        if (showFeedback) {
+          this._inputElements[i].addClass("lechef-missing");
+        }
+        return false;
       }
     }
-    return valid;
+    return true;
   };
   compproto._setPathValues = function() {
     var val, i, j, paths;
@@ -342,6 +339,37 @@
       }.bind(this)
     });
   };
+  compproto.simulateOutput = function(inputValue, inputComp, showFeedback) {
+    if (!this._inputSimulation) {
+      this._inputSimulationCompsLeft = $.extend([], this._inputs);
+      this._inputSimulation = [];
+    }
+    var inputPos = this._inputSimulationCompsLeft.indexOf(inputComp);
+    if (inputPos === -1) { return; }
+    this._inputSimulation[inputPos] = inputValue;
+    this._inputSimulationCompsLeft[inputPos] = undefined;
+
+    if (showFeedback) {
+      this._inputElements[inputPos].addClass(CIRCUIT_CONSTANTS.VALCLASS[inputValue]);
+    }
+
+    if ($.map(this._inputSimulationCompsLeft, function(item) { return item;}).length === 0) {
+      var result = this.calculateOutput(this._inputSimulation);
+      if (showFeedback) {
+        this._setPathValues(result);
+      }
+      for (var i = 0; i < this._outputElements.length; i++) {
+        if (showFeedback) {
+          this._outputElements[i].addClass(CIRCUIT_CONSTANTS.VALCLASS[result[i]]);
+        }
+        if (this._outputs[i]) {
+          for (var j = 0; j < this._outputs[i].length; j++) {
+            this._outputs[i][j].simulateOutput(result[i], this, showFeedback);
+          }
+        }
+      }
+    }
+  };
 
   var CircuitAndComponent = function(circuit, options) {
     this._componentName = "and";
@@ -360,16 +388,12 @@
 
     this._positionHandles(true);
   };
-  CircuitAndComponent.prototype.simulateOutput = function(input) {
+  CircuitAndComponent.prototype.calculateOutput = function(inputs) {
     var result = true;
-    for (var i = 0; i < this._inputs.length; i++) {
-      var res = this._inputs[i].simulateOutput(input);
-      this._inputElements[i].addClass(CIRCUIT_CONSTANTS.VALCLASS[res]);
-      result = result && res;
+    for (var i = 0; i < inputs.length; i++) {
+      result = result && inputs[i];
     }
-    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
-    this._setPathValues(result);
-    return result;
+    return [result];
   };
 
   var CircuitNandComponent = function(circuit, options) {
@@ -390,14 +414,10 @@
 
     this._positionHandles(true);
   };
-  CircuitNandComponent.prototype._andSimulateOutput = CircuitAndComponent.prototype.simulateOutput;
-  CircuitNandComponent.prototype.simulateOutput = function(input) {
-    var out = !this._andSimulateOutput(input);
-    this._outputElements[0]
-                .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
-                .addClass(CIRCUIT_CONSTANTS.VALCLASS[out]);
-    this._setPathValues(out);
-    return out;
+  CircuitNandComponent.prototype._andCalculateOutput = CircuitAndComponent.prototype.calculateOutput;
+  CircuitNandComponent.prototype.calculateOutput = function(input) {
+    var out = !(this._andCalculateOutput(input)[0]);
+    return [out];
   };
 
   var CircuitNotComponent = function(circuit, options) {
@@ -416,12 +436,8 @@
 
     this._positionHandles(true);
   };
-  CircuitNotComponent.prototype.simulateOutput = function(input) {
-    var inp = this._inputs[0].simulateOutput(input);
-    this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
-    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[!inp]);
-    this._setPathValues(!inp);
-    return !inp;
+  CircuitNotComponent.prototype.calculateOutput = function(inputs) {
+    return [!inputs[0]];
   };
 
   var CircuitOrComponent = function(circuit, options) {
@@ -447,17 +463,12 @@
 
     this._positionHandles(false);
   };
-  CircuitOrComponent.prototype.simulateOutput = function(input) {
-    var result = this._inputs[0].simulateOutput(input);
-    this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
-    for (var i = 1; i < this._inputCount; i++) {
-      var inp = this._inputs[i].simulateOutput(input);
-      this._inputElements[i].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
-      result = result || inp;
+  CircuitOrComponent.prototype.calculateOutput = function(inputs) {
+    var result = inputs[0];
+    for (var i = 1; i < inputs.length; i++) {
+      result = result || inputs[i];
     }
-    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
-    this._setPathValues(result);
-    return result;
+    return [result];
   };
 
   var CircuitNorComponent = function(circuit, options) {
@@ -485,14 +496,10 @@
     this._positionHandles(false);
   };
   // output simulation; reuse what the or component would return and negate it
-  CircuitNorComponent.prototype._orSimulateOutput = CircuitOrComponent.prototype.simulateOutput;
-  CircuitNorComponent.prototype.simulateOutput = function(input) {
-    var result = !this._orSimulateOutput(input);
-    this._outputElements[0]
-          .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
-          .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
-    this._setPathValues(result);
-    return result;
+  CircuitNorComponent.prototype._orCalculateOutput = CircuitOrComponent.prototype.calculateOutput;
+  CircuitNorComponent.prototype.calculateOutput = function(input) {
+    var orResult = this._orCalculateOutput(input);
+    return [!orResult[0]];
   };
 
 
@@ -520,15 +527,10 @@
 
     this._positionHandles(false);
   };
-  CircuitXorComponent.prototype.simulateOutput = function(input) {
-    var in1 = this._inputs[0].simulateOutput(input);
-    this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[in1]);
-    var in2 = this._inputs[1].simulateOutput(input);
-    this._inputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[in2]);
-    var out = ( in1 && !in2 ) || ( !in1 && in2 );
-    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[out]);
-    this._setPathValues(out);
-    return out;
+  CircuitXorComponent.prototype.calculateOutput = function(inputs) {
+    var in1 = inputs[0],
+        in2 = inputs[1];
+    return [( in1 && !in2 ) || ( !in1 && in2 )];
   };
 
   var CircuitEqvComponent = function(circuit, options) {
@@ -556,14 +558,10 @@
 
     this._positionHandles(false);
   };
-  CircuitEqvComponent.prototype._xorSimulateOutput = CircuitXorComponent.prototype.simulateOutput;
-  CircuitEqvComponent.prototype.simulateOutput = function(input) {
-    var result = !this._xorSimulateOutput(input);
-    this._outputElements[0]
-          .removeClass(CIRCUIT_CONSTANTS.VALCLASS[false] + " " + CIRCUIT_CONSTANTS.VALCLASS[true])
-          .addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
-    this._setPathValues(result);
-    return result;
+  CircuitEqvComponent.prototype._xorCalculateOutput = CircuitXorComponent.prototype.calculateOutput;
+  CircuitEqvComponent.prototype.calculateOutput = function(input) {
+    var xorResult = this._xorCalculateOutput(input);
+    return [!xorResult[0]];
   };
   // component for input for the circuit
   var CircuitInputComponent = function(circuit, options) {
@@ -579,11 +577,17 @@
     this._snap.rect(2, 0.2*h, 0.6*w, 0.6*h);
     this._positionHandles(false);
   };
-  CircuitInputComponent.prototype.simulateOutput = function(input) {
-    var inp = input[this._componentName];
-    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp]);
-    this._setPathValues(inp);
-    return inp;
+  CircuitInputComponent.prototype.simulateOutput = function(inputVal, comp, showFeedback) {
+    if (showFeedback) {
+      this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inputVal]);
+      this._setPathValues(inputVal);
+    }
+
+    for (var i=0; i < this._outputs.length; i++) {
+      for (var j=0; j < this._outputs[i].length; j++) {
+        this._outputs[i][j].simulateOutput(inputVal, this, showFeedback);
+      }
+    }
   };
   CircuitInputComponent.prototype.state = function() {
     return $.extend({name: "input", componentName: this._componentName}, this.options,
@@ -604,13 +608,16 @@
     this._snap.rect(0.4*w - 5, 0.2*h, 0.6*w, 0.6*h);
     this._positionHandles(false);
   };
-  CircuitOutputComponent.prototype.simulateOutput = function(input) {
-    var valid = this.validateInputs();
-    if (!valid) { return null; }
-
-    var result = this._inputs[0].simulateOutput(input);
-    this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[result]);
-    return result;
+  CircuitOutputComponent.prototype.simulateOutput = function(input, comp, showFeedback) {
+    if (showFeedback) {
+      this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[input]);
+    }
+    if ($.isFunction(this._outputListener)) {
+      this._outputListener(this._componentName, input);
+    }
+  };
+  CircuitOutputComponent.prototype.setOutputListener = function(func) {
+    this._outputListener = func;
   };
   CircuitOutputComponent.prototype.state = function() {
     return $.extend({name: "output", componentName: this._componentName, left: this.element.css("left"),
@@ -640,18 +647,14 @@
     this._outputElements[1].css({"bottom": -0.5*this._outputElements[1].outerHeight(),
                                   "left": 0.45*w - 0.5*this._outputElements[1].outerWidth()});
   };
-  CircuitHalfAdderComponent.prototype.simulateOutput = function(input) {
-    var inp0 = this._inputs[0].simulateOutput(input);
-    this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
-    var inp1 = this._inputs[1].simulateOutput(input);
-    this._inputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
-    var res0 = (inp0 || inp1) && !(inp0 && inp1),
-        res1 = inp0 && inp1;
-    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
-    this._outputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
-    this._setPathValues(res0, res1);
+  CircuitHalfAdderComponent.prototype.calculateOutput = function(inputs) {
+    var in1 = inputs[0],
+        in2 = inputs[1],
+        res0 = (in1 || in2) && !(in1 && in2),
+        res1 = in1 && in2;
     return [res0, res1];
   };
+
 
   var CircuitHalfSubstractorComponent = function(circuit, options) {
     var opts = $.extend({outputCount: 2}, options);
@@ -660,16 +663,11 @@
     this.element.find(".lechef-label").html("-&frac12;")
   };
   Utils.extend(CircuitHalfSubstractorComponent, CircuitHalfAdderComponent);
-  CircuitHalfSubstractorComponent.prototype.simulateOutput = function(input) {
-    var inp0 = this._inputs[0].simulateOutput(input);
-    this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp0]);
-    var inp1 = this._inputs[1].simulateOutput(input);
-    this._inputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[inp1]);
-    var res0 = (inp0 || inp1) && !(inp0 && inp1),
-        res1 = !inp0 && inp1;
-    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[res0]);
-    this._outputElements[1].addClass(CIRCUIT_CONSTANTS.VALCLASS[res1]);
-    this._setPathValues(res0, res1);
+  CircuitHalfSubstractorComponent.prototype.calculateOutput = function(inputs) {
+    var in1 = inputs[0],
+      in2 = inputs[1],
+      res0 = (in1 || in2) && !(in1 && in2),
+      res1 = !in1 && in2;
     return [res0, res1];
   };
 
@@ -791,15 +789,54 @@
   logicproto.components = function() {
     return this._components.slice(0);
   };
-  logicproto.simulateOutput = function(input) {
+  logicproto.resetOutput = function() {
+    var comps = this._components;
+    for (var i = comps.length; i--; ) {
+      delete comps[i]._inputSimulation;
+      delete comps[i]._inputSimulationCompsLeft;
+    }
+  };
+  logicproto.simulateOutput = function(input, showFeedback, callback) {
+    this.resetOutput();
     var result = {},
-        outs = this._outputs;
+        outs = this._outputs,
+        outputsMissing = 0,
+        called = false;
+    var allDone = function allDone() {
+      if (!called) {
+        if (showFeedback) {
+          $(".lechef-output:not(.lechef-value-false, .lechef-value-true)", this.element).addClass("lechef-missing");
+          $(".lechef-input:not(.lechef-value-false, .lechef-value-true)", this.element).addClass("lechef-missing");
+        }
+        called = true;
+        if ($.isFunction(callback)) {
+          setTimeout(function() {
+            callback(result);
+          }, 0);
+        }
+      }
+    }.bind(this);
     for (var output in outs) {
-      if (outs.hasOwnProperty(output)) {
-        result[output] = outs[output].simulateOutput(input);
+      var valid = outs[output].validateInputs();
+      if (valid) {
+        outs[output].setOutputListener(function (key, val) {
+          result[key] = val;
+          outputsMissing--;
+          if (outputsMissing === 0) {
+            allDone();
+          }
+        });
+        outputsMissing++;
       }
     }
-    return result;
+    if (outputsMissing > 0) {
+      for (var inp in this._inputs) {
+        this._inputs[inp].simulateOutput(input[inp], this._inputs[inp], showFeedback);
+      }
+      setTimeout(allDone, 50);
+    } else {
+      allDone();
+    }
   };
   logicproto.clearFeedback = function() {
     var fbClasses = ["lechef-missing", CIRCUIT_CONSTANTS.VALCLASS[false], CIRCUIT_CONSTANTS.VALCLASS[true]];

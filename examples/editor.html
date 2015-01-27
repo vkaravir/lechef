@@ -40,7 +40,8 @@
 <script>
   var init = function() {
     $(".lechef-circuit-container").html("");
-    var editor = new CircuitEditor({element: $(".lechef-circuit-container"), buttonPanelElement: $(".buttonpanel")});
+    var editor = new CircuitEditor({element: $(".lechef-circuit-container"), buttonPanelElement: $(".buttonpanel"),
+                    removeConfirm: true});
     $(".buttonpanel").append("<button id='input'>Input</button>" +
                         "<button id='output'>Output</button>" +
                         "<button id='reset'>Reset</button>");

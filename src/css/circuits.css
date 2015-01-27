@@ -156,7 +156,8 @@
 .lechef-output:hover, .lechef-input.over {
   box-shadow: 0 0 10px green;
 }
-.lechef-input.lechef-missing {
+.lechef-input.lechef-missing,
+.lechef-output.lechef-missing {
   border-color: red;
   box-shadow: 0 0 10px red;
 }
