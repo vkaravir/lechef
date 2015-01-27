@@ -1,6 +1,5 @@
 var initTestCircuit = function() {
-  var circuit = new LogicCircuit({element: $(".circuit-test-container")});
-  return circuit;
+  return new LogicCircuit({element: $(".circuit-test-container")});
 };
 var setUpSingleComponentCircuit = function(circ, comp) {
   var inpx = circ.inputComponent("x");
@@ -11,36 +10,63 @@ var setUpSingleComponentCircuit = function(circ, comp) {
   out.inputComponent(0, comp);
 };
 
+var runTest = function(circ, input, output, msg, assert, done) {
+  circ.simulateOutput(input, function(result) {
+    assert.deepEqual(result, output, msg + JSON.stringify(input));
+    done();
+  });
+};
+var runTests = function(circ, inputs, outputs, msg, assert, done) {
+  if (inputs.length > 0) {
+    var input = inputs[0],
+        output = outputs[0];
+    inputs.splice(0, 1);
+    outputs.splice(0, 1);
+    runTest(circ, input, output, msg, assert, runTests.bind(null, circ, inputs, outputs, msg, assert, done));
+  } else {
+    done();
+  }
+};
+
 QUnit.module("circuit.components");
 QUnit.test("Xor simulation", function(assert) {
   var circ = initTestCircuit();
   assert.ok(circ);
   var xor = circ.xorComponent();
   setUpSingleComponentCircuit(circ, xor);
-  assert.ok(!circ.simulateOutput({x: false, y: false}).z, "Testing XOR with input false, false");
-  assert.ok(circ.simulateOutput({x: true, y: false}).z, "Testing XOR with input true, false");
-  assert.ok(circ.simulateOutput({x: false, y: true}).z, "Testing XOR with input false, true");
-  assert.ok(!circ.simulateOutput({x: true, y: true}).z, "Testing XOR with input true, true");
+  var done = assert.async(),
+      testInput = [
+                  {x: false, y: false}, {x: true, y: false},
+                  {x: false, y: true}, {x: true, y: true}
+                  ],
+      expectedOutput = [{z: false}, {z: true}, {z: true}, {z: false}];
+  runTests(circ, testInput, expectedOutput, "Testing XOR with input ", assert, done);
 });
 QUnit.test("Eqv simulation", function(assert) {
   var circ = initTestCircuit();
   assert.ok(circ);
   var eqv = circ.eqvComponent();
   setUpSingleComponentCircuit(circ, eqv);
-  assert.ok(circ.simulateOutput({x: false, y: false}).z, "Testing EQV with input false, false");
-  assert.ok(!circ.simulateOutput({x: true, y: false}).z, "Testing EQV with input true, false");
-  assert.ok(!circ.simulateOutput({x: false, y: true}).z, "Testing EQV with input false, true");
-  assert.ok(circ.simulateOutput({x: true, y: true}).z, "Testing EQV with input true, true");
+  var done = assert.async(),
+    testInput = [
+      {x: false, y: false}, {x: true, y: false},
+      {x: false, y: true}, {x: true, y: true}
+    ],
+    expectedOutput = [{z: true}, {z: false}, {z: false}, {z: true}];
+  runTests(circ, testInput, expectedOutput, "Testing EQV with input ", assert, done);
 });
 QUnit.test("Or simulation", function(assert) {
   var circ = initTestCircuit();
   assert.ok(circ);
   var xor = circ.orComponent();
   setUpSingleComponentCircuit(circ, xor);
-  assert.ok(!circ.simulateOutput({x: false, y: false}).z, "Testing OR with input false, false");
-  assert.ok(circ.simulateOutput({x: true, y: false}).z, "Testing OR with input true, false");
-  assert.ok(circ.simulateOutput({x: false, y: true}).z, "Testing OR with input false, true");
-  assert.ok(circ.simulateOutput({x: true, y: true}).z, "Testing OR with input true, true");
+  var done = assert.async(),
+    testInput = [
+      {x: false, y: false}, {x: true, y: false},
+      {x: false, y: true}, {x: true, y: true}
+    ],
+    expectedOutput = [{z: false}, {z: true}, {z: true}, {z: true}];
+  runTests(circ, testInput, expectedOutput, "Testing OR with input ", assert, done);
 });
 QUnit.test("Nor simulation", function(assert) {
   var circ = initTestCircuit();
@@ -48,10 +74,13 @@ QUnit.test("Nor simulation", function(assert) {
   var nor = circ.norComponent();
 
   setUpSingleComponentCircuit(circ, nor);
-  assert.ok(circ.simulateOutput({x: false, y: false}).z, "Testing NOR with input false, false");
-  assert.ok(!circ.simulateOutput({x: true, y: false}).z, "Testing NOR with input true, false");
-  assert.ok(!circ.simulateOutput({x: false, y: true}).z, "Testing NOR with input false, true");
-  assert.ok(!circ.simulateOutput({x: true, y: true}).z, "Testing NOR with input true, true");
+  var done = assert.async(),
+    testInput = [
+      {x: false, y: false}, {x: true, y: false},
+      {x: false, y: true}, {x: true, y: true}
+    ],
+    expectedOutput = [{z: true}, {z: false}, {z: false}, {z: false}];
+  runTests(circ, testInput, expectedOutput, "Testing NOR with input ", assert, done);
 });
 QUnit.test("And simulation", function(assert) {
   var circ = initTestCircuit();
@@ -59,10 +88,13 @@ QUnit.test("And simulation", function(assert) {
   var nor = circ.andComponent();
 
   setUpSingleComponentCircuit(circ, nor);
-  assert.ok(!circ.simulateOutput({x: false, y: false}).z, "Testing AND with input false, false");
-  assert.ok(!circ.simulateOutput({x: true, y: false}).z, "Testing AND with input true, false");
-  assert.ok(!circ.simulateOutput({x: false, y: true}).z, "Testing AND with input false, true");
-  assert.ok(circ.simulateOutput({x: true, y: true}).z, "Testing AND with input true, true");
+  var done = assert.async(),
+    testInput = [
+      {x: false, y: false}, {x: true, y: false},
+      {x: false, y: true}, {x: true, y: true}
+    ],
+    expectedOutput = [{z: false}, {z: false}, {z: false}, {z: true}];
+  runTests(circ, testInput, expectedOutput, "Testing AND with input ", assert, done);
 });
 QUnit.test("Nand simulation", function(assert) {
   var circ = initTestCircuit();
@@ -70,10 +102,13 @@ QUnit.test("Nand simulation", function(assert) {
   var nor = circ.nandComponent();
 
   setUpSingleComponentCircuit(circ, nor);
-  assert.ok(circ.simulateOutput({x: false, y: false}).z, "Testing NAND with input false, false");
-  assert.ok(circ.simulateOutput({x: true, y: false}).z, "Testing NAND with input true, false");
-  assert.ok(circ.simulateOutput({x: false, y: true}).z, "Testing NAND with input false, true");
-  assert.ok(!circ.simulateOutput({x: true, y: true}).z, "Testing NAND with input true, true");
+  var done = assert.async(),
+    testInput = [
+      {x: false, y: false}, {x: true, y: false},
+      {x: false, y: true}, {x: true, y: true}
+    ],
+    expectedOutput = [{z: true}, {z: true}, {z: true}, {z: false}];
+  runTests(circ, testInput, expectedOutput, "Testing NAND with input ", assert, done);
 });
 QUnit.test("Half-adder simulation", function(assert) {
   var circ = initTestCircuit();
@@ -87,11 +122,14 @@ QUnit.test("Half-adder simulation", function(assert) {
   var outC = circ.outputComponent("c");
   outS.inputComponent(0, 0, adder);
   outC.inputComponent(0, 1, adder);
-
-  assert.deepEqual(adder.simulateOutput({x: false, y: false}), [false, false], "Testing Half-adder with input false, false");
-  assert.deepEqual(adder.simulateOutput({x: true, y: false}), [true, false], "Testing Half-adder with input true, false");
-  assert.deepEqual(adder.simulateOutput({x: false, y: true}), [true, false], "Testing Half-adder with input false, true");
-  assert.deepEqual(adder.simulateOutput({x: true, y: true}), [false, true], "Testing Half-adder with input true, true");
+  var done = assert.async(),
+    testInput = [
+      {x: false, y: false}, {x: true, y: false},
+      {x: false, y: true}, {x: true, y: true}
+    ],
+    expectedOutput = [{s: false, c: false}, {s: true, c: false},
+                      {s: true, c: false}, {s: false, c: true}];
+  runTests(circ, testInput, expectedOutput, "Testing Half-adder with input ", assert, done);
 });
 QUnit.test("Half-substractor simulation", function(assert) {
   var circ = initTestCircuit();
@@ -106,8 +144,12 @@ QUnit.test("Half-substractor simulation", function(assert) {
   outS.inputComponent(0, 0, substractor);
   outC.inputComponent(0, 1, substractor);
 
-  assert.deepEqual(substractor.simulateOutput({x: false, y: false}), [false, false], "Testing Half-sub with input false, false");
-  assert.deepEqual(substractor.simulateOutput({x: true, y: false}), [true, false], "Testing Half-sub with input true, false");
-  assert.deepEqual(substractor.simulateOutput({x: false, y: true}), [true, true], "Testing Half-sub with input false, true");
-  assert.deepEqual(substractor.simulateOutput({x: true, y: true}), [false, false], "Testing Half-sub with input true, true");
+  var done = assert.async(),
+    testInput = [
+      {x: false, y: false}, {x: true, y: false},
+      {x: false, y: true}, {x: true, y: true}
+    ],
+    expectedOutput = [{s: false, c: false}, {s: true, c: false},
+                      {s: true, c: true}, {s: false, c: false}];
+  runTests(circ, testInput, expectedOutput, "Testing Half-sub with input ", assert, done);
 });
