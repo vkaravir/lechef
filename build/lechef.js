@@ -1406,6 +1406,8 @@
         for (var j = c._inputCount; j--;) {
           inputFeedback(c, j, fb, state);
         }
+      } else { // add the value label to the input
+        c.element.find(".lechef-output").addClass(CIRCUIT_CONSTANTS.VALCLASS[this.exeropts.input[c._componentName]]);
       }
     }
   };
