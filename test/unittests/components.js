@@ -11,7 +11,7 @@ var setUpSingleComponentCircuit = function(circ, comp) {
 };
 
 var runTest = function(circ, input, output, msg, assert, done) {
-  circ.simulateOutput(input, function(result) {
+  circ.simulateOutput(input, false, function(result) {
     assert.deepEqual(result, output, msg + JSON.stringify(input));
     done();
   });

@@ -165,6 +165,7 @@
 
   var CircuitSimulationExercise = function (circuit, options) {
     this.circuit = circuit;
+    this.circuit.element.addClass("lechef-showfeedback");
     this.options = $.extend({}, options);
     this.initInputs();
     this.initToggles();

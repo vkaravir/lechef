@@ -130,25 +130,26 @@
     this._outputElements = [];
     this._outputCount = this.options.outputCount;
     for (var i = 0; i < this._outputCount; i++) {
-      var output = $("<div />");
-      output.addClass("lechef-output");
-      output.attr("data-pos", i);
+      var output = $("<div />")
+                .addClass("lechef-output lechef-missing")
+                .attr("data-pos", i);
       this.element.append(output);
       this._outputElements[i] = output;
     }
 
-    this._inputElements = [];
-    this._inputCount = this.options.inputCount;
-    for (i = 0; i < this._inputCount; i++ ) {
-      var input = $("<div />");
-      input.addClass("lechef-input");
-      input.attr("data-pos", i);
-      this._inputElements[i] = input;
-      this.element.append(input);
-    }
     this._inputs = [];
     this._inputpaths = [];
 
+    this._inputElements = [];
+    this._inputCount = this.options.inputCount;
+    for (i = 0; i < this._inputCount; i++ ) {
+      var input = $("<div />")
+                .addClass("lechef-input lechef-missing")
+                .attr("data-pos", i);
+      this._inputElements[i] = input;
+      this.element.append(input);
+      this._inputs.push(null);
+    }
     // draw the component shape inside the element
     this.drawComponent();
 
@@ -168,6 +169,7 @@
     }
     this._outputs[outpos].push(comp);
     this._outputpaths[outpos].push(path);
+    this._outputElements[outpos].removeClass("lechef-missing");
   };
   compproto.inputComponent = function(inpos, outpos, comp, opts) {
     if (typeof outpos === "object") {
@@ -181,6 +183,7 @@
     this._inputs[inpos] = comp;
     var path = new CircuitConnection(comp, outpos, this, inpos, opts);
     this._inputpaths[inpos] = path;
+    this._inputElements[inpos].removeClass("lechef-missing");
     comp._outputComponent(outpos, this, path);
   };
   compproto._removeOutput = function(comp) {
@@ -189,6 +192,9 @@
       if (ind !== -1) {
         this._outputs[i].splice(ind, 1);
         this._outputpaths[i].splice(ind, 1);
+        if (this._outputs[i].length === 0) {
+          this._outputElements[i].addClass("lechef-missing");
+        }
       }
     }
   };
@@ -198,6 +204,7 @@
       this._inputpaths[pos].destroy();
       this._inputs[pos] = null;
       this._inputpaths[pos] = null;
+      this._inputElements[pos].addClass("lechef-missing");
     }
   };
   compproto.getOutputComponents = function(pos) {
@@ -297,13 +304,10 @@
       }
     }
   };
-  compproto.validateInputs = function(showFeedback) {
+  compproto.validateInputs = function() {
     for (var i = this._inputCount; i--; ) {
       var input = this._inputs[i];
       if (!input) {
-        if (showFeedback) {
-          this._inputElements[i].addClass("lechef-missing");
-        }
         return false;
       }
     }
@@ -339,7 +343,7 @@
       }.bind(this)
     });
   };
-  compproto.simulateOutput = function(inputValue, inputComp, showFeedback) {
+  compproto.simulateOutput = function(inputValue, inputComp) {
     if (!this._inputSimulation) {
       this._inputSimulationCompsLeft = $.extend([], this._inputs);
       this._inputSimulation = [];
@@ -349,22 +353,24 @@
     this._inputSimulation[inputPos] = inputValue;
     this._inputSimulationCompsLeft[inputPos] = undefined;
 
-    if (showFeedback) {
-      this._inputElements[inputPos].addClass(CIRCUIT_CONSTANTS.VALCLASS[inputValue]);
-    }
+    this._inputElements[inputPos].addClass(CIRCUIT_CONSTANTS.VALCLASS[inputValue]);
 
-    if ($.map(this._inputSimulationCompsLeft, function(item) { return item;}).length === 0) {
+    // function for $.map which will filter out undefined values and replace others with true
+    // so it can be used to count the number of values which are not undefined
+    // - inputs already dealt with will be undefined
+    // - inputs not specified (no connector) will be null
+    var undefinedFilter = function(item) { 
+      return (typeof item  === "undefined")?undefined:true;
+    };
+    // if we don't have any un-specified inputs, proceed with calculating the output
+    if ($.map(this._inputSimulationCompsLeft, undefinedFilter).length === 0) {
       var result = this.calculateOutput(this._inputSimulation);
-      if (showFeedback) {
-        this._setPathValues(result);
-      }
+      this._setPathValues(result);
       for (var i = 0; i < this._outputElements.length; i++) {
-        if (showFeedback) {
-          this._outputElements[i].addClass(CIRCUIT_CONSTANTS.VALCLASS[result[i]]);
-        }
+        this._outputElements[i].addClass(CIRCUIT_CONSTANTS.VALCLASS[result[i]]);
         if (this._outputs[i]) {
           for (var j = 0; j < this._outputs[i].length; j++) {
-            this._outputs[i][j].simulateOutput(result[i], this, showFeedback);
+            this._outputs[i][j].simulateOutput(result[i], this);
           }
         }
       }
@@ -577,17 +583,16 @@
     this._snap.rect(2, 0.2*h, 0.6*w, 0.6*h);
     this._positionHandles(false);
   };
-  CircuitInputComponent.prototype.simulateOutput = function(inputVal, comp, showFeedback) {
-    if (showFeedback) {
-      this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inputVal]);
-      this._setPathValues(inputVal);
-    }
+  CircuitInputComponent.prototype.simulateOutput = function(inputVal, comp) {
+    this._outputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[inputVal]);
+    this._setPathValues(inputVal);
 
-    for (var i=0; i < this._outputs.length; i++) {
-      for (var j=0; j < this._outputs[i].length; j++) {
-        this._outputs[i][j].simulateOutput(inputVal, this, showFeedback);
+    if (this._outputs[0] && this._outputs[0].length > 0) {
+      for (var j=0; j < this._outputs[0].length; j++) {
+        this._outputs[0][j].simulateOutput(inputVal, this);
       }
     }
+
   };
   CircuitInputComponent.prototype.state = function() {
     return $.extend({name: "input", componentName: this._componentName}, this.options,
@@ -608,10 +613,8 @@
     this._snap.rect(0.4*w - 5, 0.2*h, 0.6*w, 0.6*h);
     this._positionHandles(false);
   };
-  CircuitOutputComponent.prototype.simulateOutput = function(input, comp, showFeedback) {
-    if (showFeedback) {
-      this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[input]);
-    }
+  CircuitOutputComponent.prototype.simulateOutput = function(input, comp) {
+    this._inputElements[0].addClass(CIRCUIT_CONSTANTS.VALCLASS[input]);
     if ($.isFunction(this._outputListener)) {
       this._outputListener(this._componentName, input);
     }
@@ -798,16 +801,15 @@
   };
   logicproto.simulateOutput = function(input, showFeedback, callback) {
     this.resetOutput();
+    if (showFeedback) {
+      this.element.addClass("lechef-showfeedback");
+    }
     var result = {},
         outs = this._outputs,
         outputsMissing = 0,
         called = false;
     var allDone = function allDone() {
       if (!called) {
-        if (showFeedback) {
-          $(".lechef-output:not(.lechef-value-false, .lechef-value-true)", this.element).addClass("lechef-missing");
-          $(".lechef-input:not(.lechef-value-false, .lechef-value-true)", this.element).addClass("lechef-missing");
-        }
         called = true;
         if ($.isFunction(callback)) {
           setTimeout(function() {
@@ -823,7 +825,7 @@
           result[key] = val;
           outputsMissing--;
           if (outputsMissing === 0) {
-            allDone();
+            setTimeout(allDone, 0);
           }
         });
         outputsMissing++;
@@ -831,16 +833,17 @@
     }
     if (outputsMissing > 0) {
       for (var inp in this._inputs) {
-        this._inputs[inp].simulateOutput(input[inp], this._inputs[inp], showFeedback);
+        this._inputs[inp].simulateOutput(input[inp], this._inputs[inp]);
       }
-      setTimeout(allDone, 50);
+      setTimeout(allDone, 0);
     } else {
-      allDone();
+      setTimeout(allDone, 0);
     }
   };
   logicproto.clearFeedback = function() {
-    var fbClasses = ["lechef-missing", CIRCUIT_CONSTANTS.VALCLASS[false], CIRCUIT_CONSTANTS.VALCLASS[true]];
+    var fbClasses = [CIRCUIT_CONSTANTS.VALCLASS[false], CIRCUIT_CONSTANTS.VALCLASS[true]];
     this.element.find("." + fbClasses.join(",.")).removeClass(fbClasses.join(' '));
+    this.element.removeClass("lechef-showfeedback");
     // the above won't work for the SVG elements, so we'll go through the objects
     for (var i = this._components.length; i--; ) {
       var c = this._components[i];
@@ -1247,6 +1250,7 @@
 
   var CircuitSimulationExercise = function (circuit, options) {
     this.circuit = circuit;
+    this.circuit.element.addClass("lechef-showfeedback");
     this.options = $.extend({}, options);
     this.initInputs();
     this.initToggles();
