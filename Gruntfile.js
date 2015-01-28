@@ -5,6 +5,16 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
+    compass: {
+      dist: {
+        options: {
+          config: 'src/lechef-scss/config.rb',
+          sassDir: 'src/lechef-scss/sass',
+          cssDir: 'build/',
+          outputStyle: 'compressed'
+        }
+      }
+    },
     uglify: {
       dist: {
         options: {
@@ -41,5 +51,5 @@ module.exports = function(grunt) {
   });
 
 
-  grunt.registerTask("default", ["concat", "uglify", "copy"]);
+  grunt.registerTask("default", ["compass", "concat", "uglify"]);
 };

@@ -128,12 +128,6 @@
   padding: 3px;
   border-color: red;
 }
-.lechef-value-true:before {
-  content: "1";
-}
-.lechef-value-false:before {
-  content: "0";
-}
 .lechef-input, .lechef-output {
   width: 15px;
   height: 15px;
@@ -156,11 +150,6 @@
 .lechef-output:hover, .lechef-input.over {
   box-shadow: 0 0 10px green;
 }
-.lechef-input.lechef-missing,
-.lechef-output.lechef-missing {
-  border-color: red;
-  box-shadow: 0 0 10px red;
-}
 .lechef-output.ui-draggable-dragging {
   border: none;
   background-color: transparent;
@@ -170,9 +159,6 @@
   stroke-width: 5px;
   stroke: rgb(0, 165, 235);
   fill: none;
-}
-.lechef-connector.lechef-value-false {
-  stroke: rgb(120, 120, 120);
 }
 .lechef-unconnected {
   stroke: rgb(225, 100, 100);
@@ -184,6 +170,22 @@
   height: 0;
   margin-top: 5px;
   border: 10px solid transparent;
+}
+.lechef-showfeedback, .lechef-feedback {
+  .lechef-connector.lechef-value-false {
+    stroke: rgb(120, 120, 120);
+  }
+  .lechef-input.lechef-missing,
+  .lechef-output.lechef-missing {
+    border-color: red;
+    box-shadow: 0 0 10px red;
+  }
+  .lechef-value-true:before {
+    content: "1";
+  }
+  .lechef-value-false:before {
+    content: "0";
+  }
 }
 .lechef-feedback, .lechef-feedback tr {
   position: relative;
