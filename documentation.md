@@ -78,8 +78,10 @@ And here's the resulting exercise:
     });
     $(".design-example .feedback").click(function(event){
         event.preventDefault();
-        new CircuitExerciseFeedback(exer.options, exer.grade(), {element: $("#design-example-feedback")});
-        $("#design-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
+        exer.grade(function(feedback) {
+          new CircuitExerciseFeedback(exer.options, feedback, {element: $("#design-example-feedback")});
+          $("#design-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
+        });
     });
   });
 </script>
@@ -151,8 +153,10 @@ And here's the resulting exercise:
     });
     $(".first-example .feedback").click(function(event){
         event.preventDefault();
-        new CircuitSimulationFeedback(simulation.options, simulation.grade(), {element: $("#first-example-feedback")});
-        $("#first-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
+        simulation.grade(function(feedback) {
+          new CircuitSimulationFeedback(simulation.options, feedback, {element: $("#first-example-feedback")});
+          $("#first-example-feedback .lechef-close").addClass("btn btn-success btn-xs");
+        });
     });
   });
 </script>
