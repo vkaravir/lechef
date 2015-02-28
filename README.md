@@ -6,6 +6,6 @@ Here are the components (or, gates) currently supported by the framework: NOT, A
 
 ![Logic gates supported by lechef](http://vkaravir.github.io/lechef/img/components.png)
 
-And here's an example of an exercise. In the exercise, student's task is to toggle the input/output values of each gate to match the correct values of the given input to the circuit. **Note:** This is only an image, see the docs for interactive examples.
+And here's an example of an exercise. In the exercise, student's task is to toggle the input/output values of each gate to match the correct values of the given input to the circuit. **Note:** This is only an image, see [the docs](https://vkaravir.github.com/lechef/) for interactive examples.
 
 ![Logic circuit simulation with lechef](http://vkaravir.github.io/lechef/img/simulate-exercise.png) 
